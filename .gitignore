@@ -4,6 +4,7 @@
 !.env.example
 *.pem
 *.key
+*.apk
 
 # Dependencies
 node_modules/
