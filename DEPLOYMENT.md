@@ -98,6 +98,22 @@ docker-compose down -v
 
 The application includes a health endpoint at `/health` that Render uses to monitor the service.
 
+## OAuth Redirect URLs
+
+Register both local callback URLs in the Google Cloud OAuth client while testing locally:
+
+```
+http://localhost:3000/auth/google/callback
+http://localhost:3000/auth/linkedin/callback
+```
+
+Keep these production callback URLs registered for the deployed service:
+
+```
+https://careercraft-dwn1.onrender.com/auth/google/callback
+https://careercraft-dwn1.onrender.com/auth/linkedin/callback
+```
+
 ## Troubleshooting
 
 ### Database Connection Issues

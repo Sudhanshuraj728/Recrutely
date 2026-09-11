@@ -24,6 +24,7 @@ const User = require('./models/User');
 const Company = require('./models/Company');
 const Subscription = require('./models/Subscription');
 const Contact = require('./models/Contact');
+const Application = require('./models/Application');
 const resumeAnalyzer = require('./services/resumeAnalyzer');
 const {
   buildSubscriptionPayload,
@@ -38,6 +39,13 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/careercraft';
 
 function getLinkedInCallbackUrl(req) {
+  const host = req.get('host');
+  const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim();
+  const isLocalRequest = host && /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(host);
+  if (isLocalRequest) {
+    return `${protocol}://${host}/auth/linkedin/callback`;
+  }
+
   const configuredClientUrl = (
     process.env.RENDER_EXTERNAL_URL ||
     process.env.CLIENT_URL ||
@@ -48,9 +56,18 @@ function getLinkedInCallbackUrl(req) {
     return `${configuredClientUrl}/auth/linkedin/callback`;
   }
 
-  const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim();
-  const host = req.get('host');
   return `${protocol}://${host}/auth/linkedin/callback`;
+}
+
+function getGoogleCallbackUrl(req) {
+  const host = req.get('host');
+  const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim();
+  const isLocalRequest = host && /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(host);
+  if (isLocalRequest) {
+    return `${protocol}://${host}/auth/google/callback`;
+  }
+
+  return process.env.GOOGLE_CALLBACK_URL || `${protocol}://${host}/auth/google/callback`;
 }
 
 // Security middleware
@@ -127,7 +144,8 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Serve static files from project root (index.html, style.css, index.js)
+// Serve the React production build first, then retain legacy root assets/pages.
+app.use(express.static(path.join(__dirname, 'frontend', 'dist')));
 app.use(express.static(path.join(__dirname)));
 
 // --- Auth Helper Middleware ---
@@ -339,14 +357,16 @@ app.get('/api/admin/contacts', requireAdmin, asyncHandler(async (req, res) => {
 
 // Google OAuth routes
 app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
+  (req, res, next) => passport.authenticate('google', {
+    scope: ['profile', 'email'],
+    callbackURL: getGoogleCallbackUrl(req),
+  })(req, res, next)
 );
 
 app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login' }),
+  passport.authenticate('google', { failureRedirect: '/login?error=google_failed' }),
   (req, res) => {
-    // Successful authentication, redirect to home or dashboard
-    res.redirect('/?login=success');
+    res.redirect('/login?login=success');
   }
 );
 
@@ -649,11 +669,11 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     
     if (error) {
       console.error('LinkedIn OAuth error:', error);
-      return res.redirect('/?error=linkedin_denied');
+      return res.redirect('/login?error=linkedin_denied');
     }
     
     if (!code) {
-      return res.redirect('/?error=linkedin_failed');
+      return res.redirect('/login?error=linkedin_failed');
     }
     
     // Exchange code for access token
@@ -673,7 +693,7 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     
     if (!tokenData.access_token) {
       console.error('Failed to get LinkedIn access token:', tokenData);
-      return res.redirect('/?error=linkedin_failed');
+      return res.redirect('/login?error=linkedin_failed');
     }
     
     // Get user profile using OpenID Connect userinfo endpoint
@@ -694,7 +714,7 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     const picture = userinfo.picture || '';
     
     if (!email) {
-      return res.redirect('/?error=linkedin_no_email');
+      return res.redirect('/login?error=linkedin_no_email');
     }
     
     const linkedinFlow = req.session.linkedinFlow || {};
@@ -721,7 +741,7 @@ app.get('/auth/linkedin/callback', async (req, res) => {
       
       logger.info(`LinkedIn linked to existing user: ${linkedinFlow.userId}`);
       delete req.session.linkedinFlow;
-      return res.redirect('/?linkedin=linked');
+      return res.redirect('/login?linkedin=success');
     }
     
     // Check if user exists with this email or LinkedIn ID
@@ -772,16 +792,16 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     req.login(user, (err) => {
       if (err) {
         console.error('Login error:', err);
-        return res.redirect('/?error=login_failed');
+        return res.redirect('/login?error=login_failed');
       }
       
       delete req.session.linkedinFlow;
-      res.redirect('/?linkedin=success');
+      res.redirect('/login?linkedin=success');
     });
     
   } catch (error) {
     console.error('LinkedIn callback error:', error);
-    res.redirect('/?error=linkedin_error');
+    res.redirect('/login?error=linkedin_error');
   }
 });
 
@@ -1124,7 +1144,7 @@ app.get('/api/companies', async (req, res) => {
     
     const [companies, total] = await Promise.all([
       Company.find(filter)
-        .select('name slug industry location size logo')
+        .select('name slug industry category location size logo')
         .skip(skip)
         .limit(limit)
         .lean(),
@@ -1169,7 +1189,7 @@ app.get('/api/companies/search', async (req, res) => {
       name: { $regex: query, $options: 'i' }
     })
     .limit(limit)
-    .select('name slug industry location logo')
+    .select('name slug industry category location logo')
     .lean();
     
     res.json({ 
@@ -1200,7 +1220,7 @@ app.get('/api/companies/:slug', async (req, res) => {
     }
     
     const basicCompany = await Company.findOne({ slug })
-      .select('name slug industry location size logo domain jobs')
+      .select('name slug industry category location size employeeCount customerCount founded description features logo domain jobs')
       .lean();
 
     if (!basicCompany) {
@@ -1275,7 +1295,63 @@ app.get('/api/companies/:slug/jobs', async (req, res) => {
   }
 });
 
+// GET /api/applications - Get the authenticated user's application pipeline
+app.get('/api/applications', requireAuth, asyncHandler(async (req, res) => {
+  const applications = await Application.find({ userId: req.user._id }).sort({ updatedAt: -1 }).lean();
+  res.json({ success: true, data: applications, count: applications.length });
+}));
+
+// POST /api/applications - Add an application to the authenticated user's pipeline
+app.post('/api/applications', requireAuth, asyncHandler(async (req, res) => {
+  const {
+    company, role, location, workMode, employmentType, compensation, status,
+    appliedAt, applicationDeadline, followUpAt, source, jobUrl, nextAction, notes
+  } = req.body;
+
+  if (!company?.trim() || !role?.trim()) {
+    return res.status(400).json({ success: false, error: 'Company and role are required' });
+  }
+
+  const application = await Application.create({
+    userId: req.user._id, company: company.trim(), role: role.trim(), location, workMode,
+    employmentType, compensation, status, appliedAt, applicationDeadline, followUpAt,
+    source, jobUrl, nextAction, notes
+  });
+  res.status(201).json({ success: true, data: application });
+}));
+
+// PATCH /api/applications/:id - Update an application owned by the authenticated user
+app.patch('/api/applications/:id', requireAuth, asyncHandler(async (req, res) => {
+  const allowedFields = [
+    'company', 'role', 'location', 'workMode', 'employmentType', 'compensation', 'status',
+    'appliedAt', 'applicationDeadline', 'followUpAt', 'source', 'jobUrl', 'nextAction', 'notes'
+  ];
+  const updates = Object.fromEntries(Object.entries(req.body).filter(([key]) => allowedFields.includes(key)));
+  const application = await Application.findOneAndUpdate(
+    { _id: req.params.id, userId: req.user._id }, updates, { new: true, runValidators: true }
+  ).lean();
+
+  if (!application) return res.status(404).json({ success: false, error: 'Application not found' });
+  res.json({ success: true, data: application });
+}));
+
+// DELETE /api/applications/:id - Remove an application owned by the authenticated user
+app.delete('/api/applications/:id', requireAuth, asyncHandler(async (req, res) => {
+  const application = await Application.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+  if (!application) return res.status(404).json({ success: false, error: 'Application not found' });
+  res.json({ success: true });
+}));
+
 // --- Templates Endpoints ---
+
+const templateAssets = {
+  'data-pro': 'data-analyst-template.html',
+  'analytics-expert': 'data-analyst-template.html',
+  'dev-portfolio': 'software-developer-template.html',
+  'marketing-maven': 'marketing-template.html',
+  'design-studio': 'designer-template.html',
+  'bi-specialist': 'data-analyst-template.html'
+};
 
 // GET /api/templates - Get all resume templates
 app.get('/api/templates', (req, res) => {
@@ -1331,20 +1407,23 @@ app.get('/api/templates/:id', (req, res) => {
 // GET /api/templates/:id/download - Download template
 app.get('/api/templates/:id/download', (req, res) => {
   const { id } = req.params;
-  
-  const templates = ['data-pro', 'analytics-expert', 'dev-portfolio', 'marketing-maven', 'design-studio', 'bi-specialist'];
-  
-  if (!templates.includes(id)) {
+  const asset = templateAssets[id];
+
+  if (!asset) {
     return res.status(404).json({ 
       success: false,
       error: 'Template not found' 
     });
   }
-  
-  const content = `CareerCraft Template: ${id}\n\nThis is a sample downloadable template.\nIn production, this would be a real DOCX or PDF file.`;
-  res.setHeader('Content-Disposition', `attachment; filename="${id}-template.txt"`);
-  res.setHeader('Content-Type', 'text/plain');
-  res.send(content);
+
+  res.download(path.join(__dirname, 'templates', asset), `${id}-template.html`);
+});
+
+// GET /api/templates/:id/preview - Open the actual HTML template in a browser tab
+app.get('/api/templates/:id/preview', (req, res) => {
+  const asset = templateAssets[req.params.id];
+  if (!asset) return res.status(404).send('Template not found');
+  res.sendFile(path.join(__dirname, 'templates', asset));
 });
 
 // --- Subscription Endpoints ---
@@ -1760,13 +1839,30 @@ app.post('/api/resumes/analyze', requireAuth, async (req, res) => {
       console.log('Text extracted successfully, length:', resumeText.length);
     } catch (extractError) {
       console.error('Text extraction failed:', extractError.message);
-      return res.status(400).json({
-        success: false,
-        message: 'Failed to extract text from resume. Please ensure the file is a valid PDF with text content. Error: ' + extractError.message
+      return res.json({
+        success: true,
+        message: 'Resume parsed with a critical text-layer failure',
+        data: {
+          company: { name: company.name, industry: company.industry },
+          analysis: {
+            overallScore: 0,
+            summaryRecommendation: 'This document has no reliable text layer. Upload a selectable-text PDF or DOCX before requesting ATS analysis.',
+            currentIssues: ['No extractable text layer detected.'],
+            suggestedImprovements: ['Export the resume as a text-based PDF or DOCX instead of a scanned image-only PDF.'],
+            priorityActions: [{ priority: 'critical', rule: 'Text layer', suggestion: 'Upload a selectable-text resume.' }]
+          },
+          atsAnalysis: {
+            score: 0,
+            criticalError: 'No text layer detected',
+            scoreBreakdown: { keywordAndContext: 0, structure: 0, recencyAndChronology: 0, typographyAndFile: 0 },
+            currentIssues: [{ priority: 'critical', rule: 'Text layer', issue: 'The document contains no extractable text.' }],
+            priorityActions: [{ priority: 'critical', rule: 'Text layer', suggestion: 'Upload a selectable-text resume.' }]
+          }
+        }
       });
     }
     
-    const { jobRole, jobDescription } = req.body;
+    const { jobRole, jobDescription, originalName } = req.body;
 
     // Analyze with AI
     console.log('Analyzing resume for:', companySlug);
@@ -1777,14 +1873,15 @@ app.post('/api/resumes/analyze', requireAuth, async (req, res) => {
       jobs: company.jobs
     }, {
       jobRole,
-      jobDescription
+      jobDescription,
+      fileName: originalName || filename
     });
 
-    const atsAnalysis = analysis.sections?.ats ? {
+    const atsAnalysis = analysis.atsAnalysis || (analysis.sections?.ats ? {
       atsScore: analysis.sections.ats.score,
       currentIssues: analysis.sections.ats.currentIssues,
       suggestedImprovements: analysis.sections.ats.suggestedImprovements
-    } : await resumeAnalyzer.generateATSSuggestions(resumeText);
+    } : await resumeAnalyzer.generateATSSuggestions(resumeText));
 
     // Increment analysis count (only after successful analysis)
     await subscription.incrementAnalyses();
@@ -1860,6 +1957,20 @@ app.use('/api/*', (req, res) => {
     path: req.originalUrl,
     method: req.method
   });
+});
+
+// Let React Router handle client-side routes after all API routes are resolved.
+app.get('*', (req, res, next) => {
+  if (req.method !== 'GET' || req.path.startsWith('/api/') || req.path.startsWith('/auth/')) {
+    return next();
+  }
+
+  const frontendIndex = path.join(__dirname, 'frontend', 'dist', 'index.html');
+  if (fs.existsSync(frontendIndex)) {
+    return res.sendFile(frontendIndex);
+  }
+
+  return next();
 });
 
 // Global error handler

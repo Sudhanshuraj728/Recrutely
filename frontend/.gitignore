@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+
+# Do not commit production build artifacts
+client/dist

@@ -1,8 +1,15 @@
 # Environment variables (contains secrets)
 .env
+.env.*
+!.env.example
+*.pem
+*.key
 
 # Dependencies
 node_modules/
+
+# React frontend build output
+frontend/dist/
 
 # Uploads
 uploads
@@ -12,6 +19,14 @@ uploads
 *.log
 npm-debug.log*
 server.log
+logs/
+coverage/
+.cache/
+
+# Local database files
+*.sqlite
+*.sqlite3
+*.db
 
 # OS files
 .DS_Store

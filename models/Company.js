@@ -7,6 +7,11 @@ const jobSchema = new mongoose.Schema({
   type: String, // Full-time, Part-time, Contract, Internship
   experience: String, // Entry, Mid, Senior
   salary: String,
+  stipend: String,
+  applicationDeadline: Date,
+  skills: [String],
+  applyUrl: String,
+  source: String,
   description: String,
   requirements: [String],
   postedDate: { type: Date, default: Date.now }
@@ -18,8 +23,11 @@ const companySchema = new mongoose.Schema({
   domain: { type: String },
   logo: { type: String },
   industry: { type: String },
+  category: { type: String, index: true },
   description: { type: String },
   size: { type: String },
+  employeeCount: { type: String },
+  customerCount: { type: String },
   location: { type: String },
   founded: { type: String },
   features: [String], // Company highlights/benefits

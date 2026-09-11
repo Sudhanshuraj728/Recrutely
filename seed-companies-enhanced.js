@@ -115,10 +115,19 @@ const generateJobs = (companyName, industry) => {
     }
   ];
 
-  if (industry.includes('Technology')) return techJobs.slice(0, 5);
-  if (industry.includes('Finance')) return financeJobs;
-  if (industry.includes('Consulting')) return consultingJobs;
-  return techJobs.slice(0, 3);
+  let selectedJobs;
+  if (industry.includes('Technology')) selectedJobs = techJobs.slice(0, 5);
+  else if (industry.includes('Finance')) selectedJobs = financeJobs;
+  else if (industry.includes('Consulting')) selectedJobs = consultingJobs;
+  else selectedJobs = techJobs.slice(0, 3);
+
+  return selectedJobs.map((job, index) => ({
+    ...job,
+    skills: job.skills || job.requirements.slice(0, 3),
+    stipend: job.type === 'Internship' ? '$25 - $35/hour' : undefined,
+    applicationDeadline: new Date(Date.now() + (21 + index * 7) * 24 * 60 * 60 * 1000),
+    source: 'Company careers page'
+  }));
 };
 
 // Enhanced companies data with features and jobs

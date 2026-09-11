@@ -5,6 +5,7 @@ const axios = require('axios');
 
 // Gemini API key
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY || 'your-gemini-api-key-here';
+const GEMINI_MODEL = process.env.GEMINI_MODEL || 'gemini-3.6-flash';
 
 /**
  * Extract text from image files using Gemini Vision API
@@ -20,7 +21,7 @@ async function extractTextFromImage(imagePath) {
         
         // Call Gemini Vision API
         const response = await axios.post(
-            `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+            `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`,
             {
                 contents: [{
                     parts: [
@@ -585,14 +586,14 @@ Return a JSON object with these fields:
 
 Avoid adding any markdown, explanatory text, or additional wrapper fields. Only emit valid JSON.`;
 
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
     const response = await axios.post(endpoint, {
         contents: [{
             parts: [{ text: prompt }]
         }],
         generationConfig: {
             temperature: 0.2,
-            maxOutputTokens: 2000
+            maxOutputTokens: 4096
         }
     }, {
         headers: { 'Content-Type': 'application/json' },
@@ -1019,13 +1020,128 @@ function analyzeResumeSmartly(resumeText, companyData = {}, options = {}) {
     };
 }
 
+function buildRuleBasedATSAnalysis(resumeText, companyData = {}, options = {}) {
+    const text = String(resumeText || '');
+    if (!text.trim()) {
+        return {
+            score: 0,
+            criticalError: 'No text layer detected. Upload a text-based PDF or DOCX; scanned image PDFs require OCR before ATS scoring.',
+            methodology: 'Parsing failed before ATS scoring.',
+            scoreBreakdown: { keywordAndContext: 0, structure: 0, recencyAndChronology: 0, typographyAndFile: 0 },
+            currentIssues: [{ priority: 'critical', rule: 'Text layer', issue: 'The document contains no extractable text.' }],
+            priorityActions: [{ priority: 'critical', rule: 'Text layer', suggestion: 'Upload a selectable-text resume instead of a scanned image-only PDF.' }],
+            checks: { parsedText: false }
+        };
+    }
+    const normalized = text.toLowerCase();
+    const lines = text.split(/\r?\n/).filter(Boolean);
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    const wordCount = words.length;
+    const lineCount = lines.length;
+    const estimatedPages = Math.max(1, Math.ceil(wordCount / 500));
+    const jobText = [
+        options.jobRole,
+        options.jobDescription,
+        ...(companyData.jobs || []).flatMap(job => [job.title, job.department, job.description, ...(job.requirements || [])])
+    ].filter(Boolean).join(' ').toLowerCase();
+    const stopWords = new Set('about after again against all also and any are as at be been before being between by can could did for from get had has have how if in into is it its job may more most not of on or our should than that the their then there these they this to using was were what when where which who will with would you your'.split(' '));
+    const requiredKeywords = uniqueStrings([
+        ...extractRelevantSkills(jobText),
+        ...(jobText.match(/[a-z][a-z+#./-]{3,}/g) || [])
+    ]).filter(keyword => !stopWords.has(keyword)).slice(0, 30);
+    const matchedKeywords = requiredKeywords.filter(keyword => normalized.includes(keyword));
+    const hardSkills = extractRelevantSkills(jobText);
+    const softSkills = ['leadership', 'communication', 'collaboration', 'stakeholder management', 'problem solving', 'mentoring'];
+    const matchedHardSkills = hardSkills.filter(keyword => normalized.includes(keyword));
+    const matchedSoftSkills = softSkills.filter(keyword => normalized.includes(keyword));
+    const rawKeywordScore = requiredKeywords.length ? Math.round((matchedKeywords.length / requiredKeywords.length) * 100) : 60;
+    const keywordDensity = requiredKeywords.map(keyword => ({ keyword, count: (normalized.match(new RegExp(`\\b${keyword.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'gi')) || []).length })).sort((a, b) => b.count - a.count);
+    const stuffingFlag = keywordDensity.some(item => item.count >= 8 && item.count / Math.max(1, wordCount) > 0.04);
+    const keywordScore = stuffingFlag ? Math.min(65, rawKeywordScore) : rawKeywordScore;
+    const sectionNames = ['summary', 'objective', 'experience', 'work history', 'education', 'skills', 'projects', 'certifications'];
+    const matchedSections = sectionNames.filter(section => new RegExp(`(^|\n)\s*${section}[\s:|-]`, 'i').test(text) || normalized.includes(`\n${section}`));
+    const structureScore = Math.min(100, Math.round((matchedSections.length / 5) * 100));
+    const email = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i.test(text);
+    const phone = /(?:\+?\d[\d ()-]{8,}\d)/.test(text);
+    const linkedin = /linkedin\.com/i.test(text);
+    const github = /github\.com/i.test(text);
+    const contactScore = Math.round(((email ? 1 : 0) + (phone ? 1 : 0) + (linkedin ? 1 : 0) + (github ? 1 : 0)) / 4 * 100);
+    const bulletLines = lines.filter(line => /^\s*(?:[-*•▪◦] |\d+[.)] )/.test(line)).length;
+    const metricMatches = text.match(/\b\d+(?:%|x|\+|k|m| users| clients| projects| months| years)?\b/gi) || [];
+    const actionVerbMatches = text.match(/\b(?:built|created|developed|designed|implemented|improved|reduced|increased|led|managed|launched|optimized|delivered)\b/gi) || [];
+    const impactScore = Math.min(100, Math.round((Math.min(bulletLines, 12) / 12) * 55 + (metricMatches.length ? 25 : 0) + (actionVerbMatches.length >= 3 ? 20 : 0)));
+    const blankLines = (text.match(/\n\s*\n/g) || []).length;
+    const longestLine = lines.reduce((max, line) => Math.max(max, line.length), 0);
+    const spacingChecks = {
+        hasSectionSpacing: blankLines >= Math.max(1, matchedSections.length - 1),
+        hasReadableLineLength: longestLine <= 140,
+        estimatedPages,
+        pageCountWithinGuideline: estimatedPages <= 2,
+        fontAndVisualLayout: 'Not detectable from extracted text'
+    };
+    const dateMatches = [...text.matchAll(/\b(?:0?[1-9]|1[0-2])[/.-]\d{4}\b|\b(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{4}\b/gi)];
+    const dateValues = dateMatches.map(match => {
+        const value = match[0].toLowerCase();
+        const year = Number(value.match(/\d{4}/)?.[0]);
+        const monthMatch = value.match(/^(\d{1,2})[/.-]/);
+        const month = monthMatch ? Number(monthMatch[1]) : Math.max(1, ['jan','feb','mar','apr','may','jun','jul','aug','sep','oct','nov','dec'].findIndex(item => value.startsWith(item)) + 1);
+        return year * 12 + month;
+    });
+    const descending = dateValues.every((value, index) => index === 0 || dateValues[index - 1] >= value);
+    const timelinePoints = dateValues.length < 2 ? 3 : (descending ? 10 : 2);
+    const expectedYears = /senior|lead|manager|principal/i.test(jobText) ? 4 : /mid|experienced/i.test(jobText) ? 2 : 0;
+    const observedYears = dateValues.length >= 2 ? Math.max(0, (Math.max(...dateValues) - Math.min(...dateValues)) / 12) : 0;
+    const experiencePoints = expectedYears === 0 ? 10 : Math.min(10, Math.round((observedYears / expectedYears) * 10));
+    const recencyPoints = timelinePoints + experiencePoints;
+    const textFormattingPoints = Math.round(((spacingChecks.hasSectionSpacing ? 1 : 0) + (spacingChecks.hasReadableLineLength ? 1 : 0) + (spacingChecks.pageCountWithinGuideline ? 1 : 0) + (bulletLines > 0 ? 1 : 0)) / 4 * 10);
+    const fileName = options.fileName || '';
+    const unsafeFileName = /copy|draft|version\s*\d|final\s*\d|[^a-z0-9_. -]/i.test(fileName);
+    const fileNamePoints = fileName && /\.(pdf|docx?)$/i.test(fileName) && !unsafeFileName ? 10 : 5;
+    const formattingPoints = textFormattingPoints + fileNamePoints;
+    const hardSkillPoints = hardSkills.length ? Math.round((matchedHardSkills.length / hardSkills.length) * 25) : 15;
+    const softSkillPoints = Math.round((matchedSoftSkills.length / softSkills.length) * 5);
+    const contextPoints = Math.round(keywordScore * 0.10);
+    const keywordPoints = Math.min(40, hardSkillPoints + softSkillPoints + contextPoints);
+    const structurePoints = Math.round(Math.min(100, structureScore) * 0.20);
+    const atsScore = Math.max(0, Math.min(100, keywordPoints + structurePoints + recencyPoints + formattingPoints));
+    const issues = [];
+    const improvements = [];
+    const addIssue = (priority, rule, issue, suggestion) => { issues.push({ priority, rule, issue }); improvements.push({ priority, rule, suggestion }); };
+    if (keywordScore < 70) addIssue('high', 'Keyword match', `Only ${matchedKeywords.length} of ${requiredKeywords.length || 'the detected'} target keywords appear in the resume.`, 'Add truthful role-specific keywords from the target job description to the skills and experience sections.');
+    if (stuffingFlag) addIssue('medium', 'Keyword stuffing', `The keyword “${keywordDensity[0].keyword}” appears unnaturally often.`, 'Use each keyword naturally in context instead of repeating it in a skills block.');
+    if (matchedSections.length < 5) addIssue('high', 'Section structure', `Detected ${matchedSections.length} standard sections.`, 'Use clear ATS-readable headings: Summary, Experience, Skills, Projects, and Education.');
+    if (!email || !phone) addIssue('high', 'Contact parsing', 'Email or phone number was not detected reliably.', 'Place a plain-text email and phone number in the header.');
+    if (!linkedin) addIssue('medium', 'Profile links', 'LinkedIn URL was not detected.', 'Add a complete LinkedIn URL in the header.');
+    if (!github && /software|developer|engineer|technical/i.test(jobText)) addIssue('medium', 'Profile links', 'GitHub URL was not detected for a technical target.', 'Add GitHub if it contains relevant, reviewable work.');
+    if (!bulletLines) addIssue('high', 'Bullet formatting', 'No standard bullet points were detected.', 'Use consistent bullet points beginning with strong action verbs.');
+    if (!metricMatches.length) addIssue('high', 'Measurable impact', 'No measurable outcomes were detected.', 'Add percentages, scale, revenue, latency, users, or other truthful outcomes to experience bullets.');
+    if (!spacingChecks.hasSectionSpacing || !spacingChecks.hasReadableLineLength) addIssue('medium', 'Spacing and readability', 'Extracted text suggests inconsistent spacing or very long lines.', 'Use consistent section spacing, short bullets, and a simple single-column layout.');
+    if (!spacingChecks.pageCountWithinGuideline) addIssue('medium', 'Page length', `Resume is estimated at ${estimatedPages} pages from extracted text.`, 'Keep the resume to one page early-career or two pages when experience justifies it.');
+    return {
+        score: Math.max(0, Math.min(100, atsScore)),
+        methodology: 'Deterministic ATS rubric based on extracted text and target-company/job context.',
+        scoreBreakdown: { keywordAndContext: keywordPoints, structure: structurePoints, recencyAndChronology: recencyPoints, typographyAndFile: formattingPoints },
+        ruleMaximums: { keywordAndContext: 40, structure: 20, recencyAndChronology: 20, typographyAndFile: 20 },
+        matchedKeywords,
+        missingKeywords: requiredKeywords.filter(keyword => !matchedKeywords.includes(keyword)).slice(0, 15),
+        checks: { parsedText: true, wordCount, lineCount, bulletCount: bulletLines, metricCount: metricMatches.length, matchedSections, dateCount: dateValues.length, datesDescending: descending, observedExperienceYears: Number(observedYears.toFixed(1)), expectedExperienceYears: expectedYears, matchedHardSkills, matchedSoftSkills, stuffingFlag, fileName, fileNameAccepted: fileNamePoints === 10, ...spacingChecks, emailDetected: email, phoneDetected: phone, linkedinDetected: linkedin, githubDetected: github },
+        currentIssues: issues.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority])),
+        priorityActions: improvements.sort((a, b) => ({ high: 0, medium: 1, low: 2 }[a.priority] - { high: 0, medium: 1, low: 2 }[b.priority]))
+    };
+}
+
 /**
  * Analyze resume with AI and provide company-specific suggestions
  */
 async function analyzeResumeForCompany(resumeText, companyData, options = {}) {
     try {
+        const ruleBasedATS = buildRuleBasedATSAnalysis(resumeText, companyData, options);
         console.log('🤖 Analyzing resume with Gemini...');
         const analysis = await callGeminiForResumeAnalysis(resumeText, companyData, options);
+        analysis.ruleBasedATS = ruleBasedATS;
+        analysis.atsAnalysis = ruleBasedATS;
+        analysis.priorityActions = ruleBasedATS.priorityActions;
+        analysis.overallScore = Math.round((Number(analysis.overallScore || 0) * 0.45) + (ruleBasedATS.score * 0.55));
         console.log(`✅ Gemini analysis complete! Score: ${analysis.overallScore}/100 for ${companyData.name}`);
         return analysis;
     } catch (geminiError) {
@@ -1033,6 +1149,9 @@ async function analyzeResumeForCompany(resumeText, companyData, options = {}) {
         console.log('🔁 Falling back to local heuristic analysis.');
         try {
             const analysis = analyzeResumeSmartly(resumeText, companyData, options);
+            analysis.ruleBasedATS = buildRuleBasedATSAnalysis(resumeText, companyData, options);
+            analysis.atsAnalysis = analysis.ruleBasedATS;
+            analysis.priorityActions = analysis.ruleBasedATS.priorityActions;
             console.log(`✅ Fallback analysis complete! Score: ${analysis.overallScore}/100 for ${companyData.name}`);
             return analysis;
         } catch (fallbackError) {
@@ -1060,5 +1179,6 @@ async function generateATSSuggestions(resumeText) {
 module.exports = {
     extractResumeText,
     analyzeResumeForCompany,
-    generateATSSuggestions
+    generateATSSuggestions,
+    buildRuleBasedATSAnalysis
 };

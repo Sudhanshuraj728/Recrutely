@@ -1,0 +1,166 @@
+/* ============================================================================
+   CareerCraft Design Tokens
+   Single source of truth for the global visual identity.
+   Saffron-inspired editorial theme: black canvas, warm cream, rust and copper.
+   ========================================================================== */
+
+:root {
+  /* -----------------------------------------------------------------------
+     Color — Core
+     Deep warm-brown backgrounds, cream surfaces, refined gold accent.
+     ----------------------------------------------------------------------- */
+   --color-bg: #050403;
+   --color-bg-secondary: #0d0805;
+   --color-bg-elevated: #17100c;
+   --color-bg-inset: #0a0604;
+   --color-bg-glass: rgba(20, 12, 8, 0.78);
+
+  /* Text */
+  --color-text: #ece7e0;
+   --color-text-muted: rgba(245, 241, 235, 0.88);
+   --color-text-subtle: rgba(236, 231, 224, 0.68);
+  --color-text-inverse: #1c0a06;
+
+  /* Borders */
+   --color-border: rgba(173, 72, 24, 0.30);
+   --color-border-strong: rgba(210, 116, 47, 0.50);
+   --color-border-focus: rgba(218, 125, 49, 0.90);
+
+  /* Primary — saffron gold */
+   --color-primary: #d27732;
+   --color-primary-hover: #e39a55;
+   --color-primary-active: #a9561d;
+   --color-primary-soft: rgba(210, 119, 50, 0.14);
+   --color-primary-sink: rgba(210, 119, 50, 0.08);
+
+  /* Secondary — restrained spice purple */
+   --color-secondary: #9b4a22;
+   --color-secondary-soft: rgba(155, 74, 34, 0.16);
+
+  /* Semantic */
+  --color-success: #4ad99e;
+  --color-success-soft: rgba(74, 217, 158, 0.12);
+   --color-warning: #d68b45;
+   --color-warning-soft: rgba(214, 139, 69, 0.14);
+  --color-danger: #f87171;
+  --color-danger-soft: rgba(248, 113, 113, 0.12);
+  --color-info: #7ec9f2;
+  --color-info-soft: rgba(126, 201, 242, 0.12);
+
+  /* -----------------------------------------------------------------------
+     Cream surfaces — the "paper" cards that pop off the dark canvas.
+     ----------------------------------------------------------------------- */
+  --color-cream: #ece7e0;
+  --color-cream-muted: rgba(236, 231, 224, 0.85);
+  --color-cream-ink: #241005;
+
+  /* -----------------------------------------------------------------------
+     Typography — Funnel Display headings, Host Grotesk body, Roboto Mono labels
+     Hierarchy through size and weight; big, confident display type.
+     ----------------------------------------------------------------------- */
+  --font-sans: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Funnel Display', 'Host Grotesk', system-ui, sans-serif;
+  --font-mono: 'Roboto Mono', 'SFMono-Regular', ui-monospace, Menlo, monospace;
+
+  --text-display: clamp(2.75rem, 6vw, 4.75rem);
+  --text-display-xl: clamp(3.4rem, 11vw, 9.5rem);
+  --text-h1: clamp(2rem, 5vw, 3.25rem);
+  --text-h2: clamp(1.75rem, 4vw, 2.75rem);
+  --text-h3: 1.25rem;
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.75rem;
+  --text-label: 0.75rem;
+
+  --leading-display: 1.02;
+  --leading-display-xl: 0.88;
+  --weight-display: 400;
+  --leading-heading: 1.08;
+  --leading-body: 1.6;
+  --leading-tight: 1.25;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --tracking-tight: -0.02em;
+  --tracking-body: -0.011em;
+  --tracking-label: 0.16em;
+
+  /* -----------------------------------------------------------------------
+     Spacing — 4px base scale
+     Predictable spacing across pages, cards, sections, forms, navigation.
+     ----------------------------------------------------------------------- */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px  */
+  --space-2: 0.5rem;    /* 8px  */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.5rem;    /* 24px */
+  --space-6: 2rem;      /* 32px */
+  --space-7: 3rem;      /* 48px */
+  --space-8: 4rem;      /* 64px */
+  --space-9: 6rem;      /* 96px */
+
+  --container-sm: 40rem;
+  --container-md: 56rem;
+  --container-lg: 72rem;
+  --container-xl: 84rem;
+
+  /* -----------------------------------------------------------------------
+     Radius — pill-first for CTAs, small for inner chips.
+     ----------------------------------------------------------------------- */
+  --radius-1: 0.35rem;  /* small inner chips, tags      */
+  --radius-2: 0.6rem;   /* small controls, inputs       */
+  --radius-3: 0.9rem;   /* cards, buttons               */
+  --radius-4: 1.4rem;   /* dialogs, larger surfaces     */
+  --radius-5: 2rem;     /* large feature surfaces       */
+  --radius-pill: 9999px;
+
+  /* -----------------------------------------------------------------------
+     Shadows — subtle elevation to support hierarchy
+     ----------------------------------------------------------------------- */
+  --shadow-none: none;
+  --shadow-subtle: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 0, 0, 0.2);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.3);
+  --shadow-floating: 0 24px 60px rgba(0, 0, 0, 0.55), 0 6px 16px rgba(0, 0, 0, 0.35);
+
+  /* Ring — accessible focus */
+   --ring-color: rgba(210, 119, 50, 0.5);
+  --ring-width: 2px;
+  --ring-offset: 2px;
+
+  /* -----------------------------------------------------------------------
+     Motion — durations & easings
+     Subtle, smooth, purposeful. transform/opacity only.
+     ----------------------------------------------------------------------- */
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 420ms;
+  --motion-enter: 500ms;
+
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* -----------------------------------------------------------------------
+     z-index scale
+     ----------------------------------------------------------------------- */
+  --z-base: 0;
+  --z-sticky: 50;
+  --z-header: 80;
+  --z-dropdown: 100;
+  --z-toast: 120;
+  --z-tooltip: 130;
+  --z-modal: 140;
+  --z-overlay: 115;
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --space-4: 1rem;
+    --space-5: 1.75rem;
+    --space-6: 2.5rem;
+  }
+}

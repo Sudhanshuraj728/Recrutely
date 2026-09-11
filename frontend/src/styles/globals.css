@@ -1,0 +1,497 @@
+/* ============================================================================
+   CareerCraft Globals — typography utilities, layout, surfaces, motion policy
+   ========================================================================== */
+
+/* ---------------------------------------------------------------------------
+   Typography scale
+   --------------------------------------------------------------------------- */
+.text-display {
+  font-size: var(--text-display);
+  line-height: var(--leading-display);
+  font-weight: var(--weight-display);
+  letter-spacing: var(--tracking-tight);
+}
+
+/* Heraldic editorial display — huge, thin, tight. */
+.type-display-xl {
+  font-family: var(--font-display);
+  font-size: var(--text-display-xl);
+  line-height: var(--leading-display-xl);
+  font-weight: var(--weight-display);
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+
+.vertical-label {
+  writing-mode: vertical-rl;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  letter-spacing: 0.3em;
+}
+
+.text-h1 {
+  font-size: var(--text-h1);
+  line-height: var(--leading-heading);
+  font-weight: var(--weight-semibold);
+}
+
+.text-h2 {
+  font-size: var(--text-h2);
+  line-height: var(--leading-heading);
+  font-weight: var(--weight-semibold);
+}
+
+.text-h3 {
+  font-size: var(--text-h3);
+  line-height: var(--leading-heading);
+  font-weight: var(--weight-semibold);
+}
+
+.text-body {
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+.text-small {
+  font-size: var(--text-small);
+  line-height: var(--leading-body);
+}
+
+.text-caption {
+  font-size: var(--text-caption);
+  line-height: var(--leading-tight);
+}
+
+.text-label {
+  font-size: var(--text-label);
+  line-height: 1;
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.text-subtle {
+  color: var(--color-text-subtle);
+}
+
+.text-mono {
+  font-family: var(--font-mono);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Editorial eyebrow — mono label with a gold rule */
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.eyebrow::before {
+  content: "";
+  width: 2.25rem;
+  height: 1px;
+  background: currentColor;
+}
+
+/* ---------------------------------------------------------------------------
+   Gold / outline pill buttons (Saffron-style CTAs)
+   --------------------------------------------------------------------------- */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  border-radius: var(--radius-pill);
+  padding: 0.85rem 1.8rem;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+  transition-property: background-color, border-color, color, transform;
+  transition-duration: var(--motion-base);
+}
+
+.pill:active {
+  transform: scale(0.97);
+}
+
+.pill-gold {
+  background-color: var(--color-primary);
+  color: var(--color-text-inverse);
+}
+
+.pill-gold:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.pill-outline {
+  border: 1px solid var(--color-border-strong);
+  color: var(--color-text);
+}
+
+.pill-outline:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.pill-sm {
+  padding: 0.55rem 1.1rem;
+  font-size: 0.8rem;
+}
+
+.pill-lg {
+  padding: 1.1rem 2.4rem;
+  font-size: 1.05rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Cream "paper" surface — dark text on light card, evoking Saffron's cards
+   --------------------------------------------------------------------------- */
+.paper {
+  background-color: var(--color-cream);
+  color: var(--color-cream-ink);
+}
+
+/* Gold dashed stat underline */
+.stat-rule {
+  display: block;
+  width: 100%;
+  height: 2px;
+  margin-top: 0.75rem;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-primary) 55%,
+    transparent 0%
+  );
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+}
+
+/* Compact variant for inline/right-ruled stats */
+.stat-rule-sm {
+  display: block;
+  width: 3rem;
+  height: 2px;
+  margin-top: 0;
+  background-image: linear-gradient(
+    90deg,
+    var(--color-primary) 55%,
+    transparent 0%
+  );
+  background-size: 12px 2px;
+  background-repeat: repeat-x;
+}
+
+/* ---------------------------------------------------------------------------
+   Layout helpers
+   --------------------------------------------------------------------------- */
+.container {
+  width: 100%;
+  max-width: var(--container-xl);
+  margin-inline: auto;
+  padding-inline: var(--space-5);
+}
+
+.container-sm { max-width: var(--container-sm); }
+.container-md { max-width: var(--container-md); }
+.container-lg { max-width: var(--container-lg); }
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grow {
+  flex: 1;
+}
+
+/* ---------------------------------------------------------------------------
+   Editorial divider system — hairline rules for the web-print look.
+   Horizontal and vertical 1px rules, plus convenience border utilities.
+   --------------------------------------------------------------------------- */
+.rule-x,
+.rule-y {
+  display: block;
+  flex: none;
+  background: var(--color-border);
+  border: 0;
+}
+
+.rule-x {
+  width: 100%;
+  height: 1px;
+}
+
+/* Height is controlled at the call site (e.g. h-3, h-24). */
+.rule-y {
+  width: 1px;
+  min-height: 1px;
+}
+
+.hairline-t {
+  border-top: 1px solid var(--color-border);
+}
+
+.hairline-b {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.hairline-r {
+  border-right: 1px solid var(--color-border);
+}
+
+.hairline-l {
+  border-left: 1px solid var(--color-border);
+}
+
+/* Full-bleed band: spans viewport with its own internal container */
+.full-bleed {
+  width: 100vw;
+  margin-left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Spacing helpers (4px scale) */
+.mt-1 { margin-top: var(--space-1); }
+.mt-2 { margin-top: var(--space-2); }
+.mt-3 { margin-top: var(--space-3); }
+.mt-4 { margin-top: var(--space-4); }
+.mt-6 { margin-top: var(--space-6); }
+.mt-8 { margin-top: var(--space-8); }
+.mb-1 { margin-bottom: var(--space-1); }
+.mb-2 { margin-bottom: var(--space-2); }
+.mb-4 { margin-bottom: var(--space-4); }
+.mb-6 { margin-bottom: var(--space-6); }
+.gap-1 { gap: var(--space-1); }
+.gap-2 { gap: var(--space-2); }
+.gap-3 { gap: var(--space-3); }
+.gap-4 { gap: var(--space-4); }
+.gap-6 { gap: var(--space-6); }
+
+/* ---------------------------------------------------------------------------
+   Surface primitives (reusable surfaces)
+   --------------------------------------------------------------------------- */
+.surface-primary {
+  background-color: var(--color-bg);
+}
+
+.surface-secondary {
+  background-color: var(--color-bg-secondary);
+}
+
+.surface-elevated {
+  background-color: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.surface-glass {
+  background-color: var(--color-bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+}
+
+/* ---------------------------------------------------------------------------
+   Visually hidden (a11y) — still accessible to screen readers
+   --------------------------------------------------------------------------- */
+.sr-only {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------------------------------------------------------------------------
+   Responsive foundation
+   Mobile-first. Components must adapt naturally across the full range:
+   320 / 375 / 430 / 768 / 1024 / 1280 / 1440 / 1920+
+   --------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Keyframes (decorative, transform/opacity/width only)
+   --------------------------------------------------------------------------- */
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-120%);
+  }
+  100% {
+    transform: translateX(320%);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -468px 0;
+  }
+  100% {
+    background-position: 468px 0;
+  }
+}
+
+/* Infinite logo marquee */
+@keyframes marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  min-width: max-content;
+  animation: marquee 24s linear infinite;
+  will-change: transform;
+}
+
+.marquee-track:hover {
+  animation-play-state: paused;
+}
+
+/* ---------------------------------------------------------------------------
+   Hero artwork motion — slow, cinematic, transform/opacity only.
+   Neutralized globally by the reduced-motion policy below.
+   --------------------------------------------------------------------------- */
+@keyframes float-y {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+.float-y {
+  transform-origin: center;
+  animation: float-y 9s ease-in-out infinite;
+}
+
+@keyframes hero-drift {
+  0%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-14px) scale(1.018);
+  }
+}
+
+.hero-drift {
+  animation: hero-drift 16s ease-in-out infinite;
+}
+
+@keyframes signal-flow {
+  to {
+    stroke-dashoffset: -447;
+  }
+}
+
+.signal-flow {
+  animation: signal-flow 8s linear infinite;
+}
+
+/* Brand intro — breathing glow behind the wordmark */
+@keyframes intro-glow {
+  0%,
+  100% {
+    opacity: 0.22;
+  }
+  50% {
+    opacity: 0.48;
+  }
+}
+
+.intro-glow {
+  animation: intro-glow 3.4s ease-in-out infinite;
+}
+
+/* ---------------------------------------------------------------------------
+   Anchor alignment — keep section headings clear of the fixed navbar
+   --------------------------------------------------------------------------- */
+html {
+  scroll-padding-top: 5.5rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Lenis smooth scroll
+   --------------------------------------------------------------------------- */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion — global policy
+   Remove parallax, decorative motion, reduce transitions. Keep feedback.
+   --------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

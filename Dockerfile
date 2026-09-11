@@ -1,4 +1,13 @@
-# Use Node.js 18 LTS
+# Build the React frontend separately from the backend runtime dependencies.
+FROM node:18-alpine AS frontend-build
+
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
+# Use Node.js 18 LTS for the backend runtime.
 FROM node:18-alpine
 
 # Set working directory
@@ -12,6 +21,7 @@ RUN npm ci --only=production
 
 # Copy application files
 COPY . .
+COPY --from=frontend-build /frontend/dist ./frontend/dist
 
 # Create necessary directories
 RUN mkdir -p uploads logs
