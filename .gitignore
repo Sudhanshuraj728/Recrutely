@@ -9,6 +9,9 @@
 # Dependencies
 node_modules/
 
+# Standalone React Native mobile app kept locally, not published with the website
+CareerCraftApp/
+
 # React frontend build output
 frontend/dist/
 
