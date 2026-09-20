@@ -21,7 +21,7 @@ export function Sidebar() {
     <aside
       aria-label="Primary"
       className={cn(
-        'sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-[var(--color-border)] bg-[var(--color-bg-secondary)]/60 backdrop-blur-md transition-[width] duration-[var(--motion-base)] ease-out lg:flex',
+        'sticky top-0 hidden h-dvh shrink-0 flex-col border-r border-white/10 bg-[var(--color-bg-secondary)]/55 backdrop-blur-2xl transition-[width] duration-[var(--motion-base)] ease-out lg:flex',
         collapsed ? 'w-[68px]' : 'w-[248px]'
       )}
     >
@@ -101,8 +101,10 @@ function SidebarItem({ item, collapsed, reduce }) {
                   ? { duration: 0 }
                   : { type: 'spring', stiffness: 500, damping: 40 }
               }
-              className="absolute inset-0 rounded-[var(--radius-2)] bg-[var(--color-primary-sink)] ring-1 ring-inset ring-[var(--color-primary-soft)]"
-            />
+              className="absolute inset-0 rounded-[var(--radius-2)] bg-[#F9A826]/10"
+            >
+              <span aria-hidden="true" className="absolute inset-y-0 left-0 w-[2px] rounded-full bg-[#F9A826]" />
+            </motion.span>
           )}
           <Icon
             aria-hidden="true"

@@ -34,11 +34,11 @@ export function HowItWorks() {
     >
       <Stagger>
         <div className="grid gap-5 md:grid-cols-3">
-          {STEPS.map((s, i) => (
+          {STEPS.map((s) => (
             <StaggerChild key={s.title}>
               <div className="relative h-full rounded-[var(--radius-3)] border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-7">
-                <span className="absolute right-5 top-5 font-mono text-5xl font-bold leading-none text-[var(--color-primary-soft)]">
-                  {String(i + 1).padStart(2, '0')}
+                <span className="absolute right-5 top-5 text-[var(--color-primary-soft)] [&_svg]:h-10 [&_svg]:w-10">
+                  <s.icon aria-hidden="true" strokeWidth={1.5} />
                 </span>
                 <span className="mb-6 inline-flex h-11 w-11 items-center justify-center rounded-[var(--radius-2)] bg-[var(--color-primary-sink)] text-[var(--color-primary)]">
                   <s.icon className="h-5 w-5" />

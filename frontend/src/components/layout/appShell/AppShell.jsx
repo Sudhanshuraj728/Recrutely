@@ -26,11 +26,13 @@ function ShellContent() {
   }, [location.pathname, reduce]);
 
   return (
-    <div className="flex min-h-dvh bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="relative flex min-h-dvh overflow-x-clip bg-[var(--color-bg)] text-[var(--color-text)]">
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 opacity-5 [background-image:radial-gradient(circle,rgba(255,255,255,0.5)_1px,transparent_1px)] [background-size:26px_26px]" />
+      <div aria-hidden="true" className="pointer-events-none absolute -right-40 top-20 h-[32rem] w-[32rem] rounded-full bg-[radial-gradient(circle,rgba(249,168,38,0.07),transparent_68%)] blur-[120px]" />
       <Sidebar />
       <MobileNav />
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="relative z-10 flex min-w-0 flex-1 flex-col">
         <Header />
 
         <main className="flex-1">

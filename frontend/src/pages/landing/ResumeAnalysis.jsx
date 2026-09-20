@@ -83,15 +83,15 @@ function FeaturePoint({ icon: Icon, n, title, body }) {
 
 function AnalysisCard() {
   return (
-    <div className="paper overflow-hidden rounded-[var(--radius-4)] shadow-[var(--shadow-floating)]">
-      <div className="flex items-center justify-between border-b border-black/10 px-6 py-5">
+    <div className="overflow-hidden rounded-2xl border border-white/10 bg-[#111111] text-white shadow-2xl">
+      <div className="flex items-center justify-between border-b border-white/10 px-6 py-5">
         <div className="flex items-center gap-3">
           <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-cream-ink)] text-[var(--color-cream)]">
             <FileText className="h-5 w-5" />
           </span>
           <div>
             <p className="text-sm font-semibold">Product Manager</p>
-            <p className="font-mono text-xs text-black/45">resume.pdf · 2 pages</p>
+            <p className="font-mono text-xs text-gray-400">resume.pdf · 2 pages</p>
           </div>
         </div>
         <span className="text-3xl font-semibold text-[var(--color-primary-active)]">78</span>
@@ -99,7 +99,7 @@ function AnalysisCard() {
 
       <div className="space-y-6 px-6 py-6">
         <div>
-          <p className="mb-3 font-mono text-xs uppercase tracking-[0.18em] text-black/45">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.18em] text-gray-400">
             What’s working
           </p>
           <ul className="space-y-2.5">
@@ -110,7 +110,7 @@ function AnalysisCard() {
         </div>
 
         <div>
-          <p className="mb-3 font-mono text-xs uppercase tracking-[0.18em] text-black/45">
+          <p className="mb-3 font-mono text-xs uppercase tracking-[0.18em] text-gray-400">
             Quick wins to unlock
           </p>
           <ul className="space-y-2.5">
@@ -120,9 +120,9 @@ function AnalysisCard() {
           </ul>
         </div>
 
-        <div className="flex items-center gap-3 rounded-[var(--radius-3)] bg-[var(--color-primary)]/15 py-4 pl-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.04] py-4 pl-4">
           <span aria-hidden="true" className="h-full w-1 self-stretch rounded-full bg-[var(--color-primary-active)]" />
-          <p className="text-sm text-[var(--color-cream-ink)]">
+          <p className="text-sm text-gray-300">
             Apply these focused fixes to make your resume clearer, stronger, and easier to scan.
           </p>
         </div>
@@ -141,7 +141,7 @@ function ScoreRow({ tone, text }) {
           tone === 'success' ? 'text-[var(--color-success)]' : 'text-[var(--color-warning)]'
         )}
       />
-      <span className="text-[var(--color-cream-ink)]">{text}</span>
+      <span className="text-gray-200">{text}</span>
     </li>
   );
 }

@@ -1,6 +1,9 @@
 import { SmoothScroll } from '../components/motion/SmoothScroll';
+import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { Noise } from '../components/landing/Noise';
-import { LandingNavbar } from './landing/LandingNavbar';
+import { useIntro } from '../context/IntroContext';
+import { Hero } from './landing/Hero';
 import { LightningCanvas } from './landing/LightningCanvas';
 import { Marquee } from './landing/Marquee';
 import { ResumeAnalysis } from './landing/ResumeAnalysis';
@@ -24,6 +27,9 @@ import { Footer } from './landing/Footer';
  * the canvas without extra work. All landing content lives in a z-index:1 wrapper.
  */
 export default function Landing() {
+  const { done, cleared } = useIntro();
+  const [settled, setSettled] = useState(false);
+
   return (
     /* Root — pure-black background so the canvas shows through all gaps */
     <div
@@ -33,16 +39,19 @@ export default function Landing() {
         background: '#000',
       }}
     >
-      {/* ── Global fixed lightning background (z-index: 0) ── */}
-      <LightningCanvas />
-
       {/* ── All page content (z-index: 1, scrolls normally) ── */}
-      <div style={{ position: 'relative', zIndex: 1 }}>
+      {cleared && <LightningCanvas />}
+      <motion.div
+        initial={{ opacity: 0.78, scale: 0.96, filter: 'blur(10px)' }}
+        animate={done ? { opacity: 1, scale: 1, filter: 'blur(0px)' } : undefined}
+        transition={{ duration: 1.55, ease: [0.76, 0, 0.24, 1] }}
+        onAnimationComplete={() => setSettled(true)}
+        style={{ position: 'relative', zIndex: 1, transformOrigin: 'center top', willChange: settled ? 'auto' : 'transform, filter, opacity' }}
+      >
         <SmoothScroll />
         <Noise />
-        <LandingNavbar />
         <main>
-          <CtaBand />
+          <Hero />
           <Marquee />
           <ResumeAnalysis />
           <CareerJourney />
@@ -53,9 +62,10 @@ export default function Landing() {
           <TemplatesShowcase />
           <Pricing />
           <FAQ />
+          <CtaBand />
         </main>
         <Footer />
-      </div>
+      </motion.div>
     </div>
   );
 }

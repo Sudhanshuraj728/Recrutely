@@ -19,7 +19,7 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-[var(--z-header)] h-16 shrink-0 border-b border-[var(--color-border)] bg-[var(--color-bg)]/75 backdrop-blur-lg">
+    <header className="sticky top-0 z-[var(--z-header)] h-16 shrink-0 border-b border-white/10 bg-[var(--color-bg)]/65 backdrop-blur-2xl">
       <div className="flex h-full items-center gap-2 px-4 sm:px-6">
         {/* Mobile menu toggle */}
         <IconButton
@@ -38,7 +38,7 @@ export function Header() {
             if (e.key === 'Enter') openCommand();
           }}
           aria-label="Search and run commands"
-          className="group inline-flex h-9 max-w-md flex-1 items-center gap-3 rounded-[var(--radius-2)] border border-[var(--color-border)] bg-[var(--color-bg-secondary)]/50 px-3 text-sm text-[var(--color-text-subtle)] transition-colors hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ring-color)] sm:max-w-sm"
+          className="group inline-flex h-10 max-w-md flex-1 items-center gap-3 rounded-xl border border-white/10 bg-white/[0.025] px-3 text-sm text-[var(--color-text-subtle)] transition-colors hover:border-white/20 hover:bg-white/[0.05] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--ring-color)] sm:max-w-sm"
         >
           <Search className="h-4 w-4 shrink-0" />
           <span className="hidden flex-1 text-left sm:block">

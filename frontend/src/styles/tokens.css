@@ -9,39 +9,39 @@
      Color — Core
      Deep warm-brown backgrounds, cream surfaces, refined gold accent.
      ----------------------------------------------------------------------- */
-   --color-bg: #050403;
-   --color-bg-secondary: #0d0805;
-   --color-bg-elevated: #17100c;
-   --color-bg-inset: #0a0604;
-   --color-bg-glass: rgba(20, 12, 8, 0.78);
+   --color-bg: #080a0d;
+   --color-bg-secondary: #0e1218;
+   --color-bg-elevated: #171d25;
+   --color-bg-inset: #06080b;
+   --color-bg-glass: rgba(17, 23, 31, 0.78);
 
   /* Text */
-  --color-text: #ece7e0;
-   --color-text-muted: rgba(245, 241, 235, 0.88);
-   --color-text-subtle: rgba(236, 231, 224, 0.68);
-  --color-text-inverse: #1c0a06;
+   --color-text: #f4f1ea;
+      --color-text-muted: rgba(231, 235, 239, 0.82);
+      --color-text-subtle: rgba(205, 214, 222, 0.62);
+    --color-text-inverse: #11100c;
 
   /* Borders */
-   --color-border: rgba(173, 72, 24, 0.30);
-   --color-border-strong: rgba(210, 116, 47, 0.50);
-   --color-border-focus: rgba(218, 125, 49, 0.90);
+   --color-border: rgba(255, 255, 255, 0.10);
+   --color-border-strong: rgba(255, 255, 255, 0.18);
+   --color-border-focus: rgba(249, 168, 38, 0.90);
 
   /* Primary — saffron gold */
-   --color-primary: #d27732;
-   --color-primary-hover: #e39a55;
-   --color-primary-active: #a9561d;
-   --color-primary-soft: rgba(210, 119, 50, 0.14);
-   --color-primary-sink: rgba(210, 119, 50, 0.08);
+   --color-primary: #f9a826;
+   --color-primary-hover: #ffc45c;
+   --color-primary-active: #d97706;
+   --color-primary-soft: rgba(249, 168, 38, 0.14);
+   --color-primary-sink: rgba(249, 168, 38, 0.07);
 
   /* Secondary — restrained spice purple */
-   --color-secondary: #9b4a22;
-   --color-secondary-soft: rgba(155, 74, 34, 0.16);
+   --color-secondary: #5eead4;
+   --color-secondary-soft: rgba(94, 234, 212, 0.12);
 
   /* Semantic */
   --color-success: #4ad99e;
   --color-success-soft: rgba(74, 217, 158, 0.12);
-   --color-warning: #d68b45;
-   --color-warning-soft: rgba(214, 139, 69, 0.14);
+   --color-warning: #fbbf24;
+   --color-warning-soft: rgba(251, 191, 36, 0.14);
   --color-danger: #f87171;
   --color-danger-soft: rgba(248, 113, 113, 0.12);
   --color-info: #7ec9f2;
@@ -50,9 +50,9 @@
   /* -----------------------------------------------------------------------
      Cream surfaces — the "paper" cards that pop off the dark canvas.
      ----------------------------------------------------------------------- */
-  --color-cream: #ece7e0;
-  --color-cream-muted: rgba(236, 231, 224, 0.85);
-  --color-cream-ink: #241005;
+   --color-cream: #f4f1ea;
+   --color-cream-muted: rgba(244, 241, 234, 0.85);
+   --color-cream-ink: #151719;
 
   /* -----------------------------------------------------------------------
      Typography — Funnel Display headings, Host Grotesk body, Roboto Mono labels
@@ -61,6 +61,8 @@
   --font-sans: 'Host Grotesk', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Funnel Display', 'Host Grotesk', system-ui, sans-serif;
   --font-mono: 'Roboto Mono', 'SFMono-Regular', ui-monospace, Menlo, monospace;
+  --font-resume-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-resume-serif: 'Lora', Georgia, 'Times New Roman', serif;
 
   --text-display: clamp(2.75rem, 6vw, 4.75rem);
   --text-display-xl: clamp(3.4rem, 11vw, 9.5rem);
@@ -127,7 +129,7 @@
   --shadow-floating: 0 24px 60px rgba(0, 0, 0, 0.55), 0 6px 16px rgba(0, 0, 0, 0.35);
 
   /* Ring — accessible focus */
-   --ring-color: rgba(210, 119, 50, 0.5);
+   --ring-color: rgba(249, 168, 38, 0.5);
   --ring-width: 2px;
   --ring-offset: 2px;
 
@@ -155,6 +157,32 @@
   --z-tooltip: 130;
   --z-modal: 140;
   --z-overlay: 115;
+}
+
+html[data-theme='light'] {
+   --color-bg: #f5f3ee;
+   --color-bg-secondary: #ebe9e3;
+   --color-bg-elevated: #ffffff;
+   --color-bg-inset: #e3e1db;
+   --color-bg-glass: rgba(255, 255, 255, 0.78);
+   --color-text: #17191c;
+   --color-text-muted: rgba(35, 40, 45, 0.76);
+   --color-text-subtle: rgba(35, 40, 45, 0.58);
+   --color-text-inverse: #f8f6f0;
+   --color-border: rgba(23, 25, 28, 0.12);
+   --color-border-strong: rgba(23, 25, 28, 0.2);
+   --color-border-focus: rgba(180, 116, 35, 0.9);
+   --color-primary: #b87523;
+   --color-primary-hover: #d3913c;
+   --color-primary-active: #8f5b19;
+   --color-primary-soft: rgba(184, 117, 35, 0.14);
+   --color-primary-sink: rgba(184, 117, 35, 0.08);
+   --color-secondary: #0f766e;
+   --color-secondary-soft: rgba(15, 118, 110, 0.12);
+   --color-cream: #ffffff;
+   --color-cream-muted: rgba(255, 255, 255, 0.8);
+   --color-cream-ink: #17191c;
+   --ring-color: rgba(184, 117, 35, 0.5);
 }
 
 @media (min-width: 1024px) {

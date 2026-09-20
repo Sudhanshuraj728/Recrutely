@@ -611,6 +611,7 @@ export function LightningCanvas() {
       ctx.globalCompositeOperation='source-over';
     }
 
+    let lastDrawAt=0;
     function frame(now) {
       if (!S.alive||!S.running) return;
       const dt=Math.min(50,now-(S.prevTime||now))/1000; S.prevTime=now;
@@ -618,7 +619,8 @@ export function LightningCanvas() {
         if (S.smx===null) { S.smx=S.rawMx; S.smy=S.rawMy; }
         else { const k=1-Math.exp(-dt/0.08); S.smx+=(S.rawMx-S.smx)*k; S.smy+=(S.rawMy-S.smy)*k; }
       } else { S.smx=null; S.smy=null; }
-      if (dt>0) {
+      if (dt>0 && now-lastDrawAt >= 33) {
+        lastDrawAt=now;
         try { draw(now,dt); }
         catch(e) { S.alive=false; cancelAnimationFrame(rafId); console.warn('[LightningCanvas]',e); return; }
       }

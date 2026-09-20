@@ -384,11 +384,14 @@
   display: flex;
   width: max-content;
   min-width: max-content;
-  animation: marquee 24s linear infinite;
   will-change: transform;
 }
 
-.marquee-track:hover {
+.marquee-animate {
+  animation: marquee 36s linear infinite;
+}
+
+.marquee-animate:hover {
   animation-play-state: paused;
 }
 

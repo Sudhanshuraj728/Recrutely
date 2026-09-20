@@ -26,14 +26,10 @@ export function Field({
       {label && (
         <label
           htmlFor={controlId}
-          className="text-sm font-medium text-[var(--color-text)]"
+          className="text-xs font-medium uppercase tracking-[0.12em] text-[var(--color-text-muted)]"
         >
           {label}
-          {required && (
-            <span aria-hidden="true" className="ml-0.5 text-[var(--color-danger)]">
-              *
-            </span>
-          )}
+          {required && <span className="sr-only"> required</span>}
         </label>
       )}
       {children}

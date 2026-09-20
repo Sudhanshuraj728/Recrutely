@@ -51,7 +51,9 @@ export function ProfileMenu() {
                 {displayName}
               </span>
               <span className="max-w-[6rem] truncate text-[0.625rem] text-[var(--color-text-subtle)]">
-                {isAuthenticated ? 'Pro · Free' : 'Not signed in'}
+                {isAuthenticated
+                  ? `${user?.isPremium || user?.subscriptionPlan === 'premium' ? 'Pro' : 'Free'} plan`
+                  : 'Not signed in'}
               </span>
             </span>
             <ChevronDown
@@ -110,7 +112,7 @@ export function ProfileMenu() {
         </>
       )}
       </Dropdown>
-      {isAuthenticated && <button type="button" onClick={() => handleLogout()} disabled={loggingOut} className="hidden items-center gap-1.5 rounded-[var(--radius-2)] border border-[var(--color-border)] px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-danger)] hover:text-[var(--color-danger)] disabled:opacity-50 sm:inline-flex"><LogOut className="h-3.5 w-3.5" />{loggingOut ? 'Signing out...' : 'Sign out'}</button>}
+      {isAuthenticated && <button type="button" onClick={() => handleLogout()} disabled={loggingOut} className="inline-flex items-center gap-1.5 rounded-[var(--radius-2)] border border-[var(--color-border)] px-3 py-2 text-xs font-semibold text-[var(--color-text-muted)] transition-colors hover:border-[var(--color-danger)] hover:text-[var(--color-danger)] disabled:opacity-50"><LogOut className="h-3.5 w-3.5" />{loggingOut ? 'Signing out...' : 'Sign out'}</button>}
     </div>
   );
 }

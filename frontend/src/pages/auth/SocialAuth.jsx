@@ -1,4 +1,6 @@
 import { cn } from '../../lib/cn';
+import { useState } from 'react';
+import { AuthTransition } from './AuthTransition';
 
 const GOOGLE_SVG = (
   <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
@@ -33,27 +35,38 @@ const LINKEDIN_SVG = (
  * do not call the API client directly.
  */
 export function SocialAuth({ className }) {
+  const [loading, setLoading] = useState(false);
+
   return (
-    <div className={cn('grid gap-3', className)}>
-      <OAuthButton href="/auth/google" icon={GOOGLE_SVG}>
+    <>
+      <AuthTransition phase={loading ? 'loading' : null} />
+      <div className={cn('grid gap-3', className)}>
+      <OAuthButton href="/auth/google" icon={GOOGLE_SVG} onStart={() => setLoading(true)}>
         Continue with Google
       </OAuthButton>
-      <OAuthButton href="/auth/linkedin" icon={LINKEDIN_SVG} tone="linkedin">
+      <OAuthButton href="/auth/linkedin" icon={LINKEDIN_SVG} tone="linkedin" onStart={() => setLoading(true)}>
         Continue with LinkedIn
       </OAuthButton>
-    </div>
+      </div>
+    </>
   );
 }
 
-function OAuthButton({ href, icon, children, tone = 'default' }) {
+function OAuthButton({ href, icon, children, tone = 'default', onStart }) {
   return (
     <a
       href={href}
+      onClick={(event) => {
+        event.preventDefault();
+        sessionStorage.setItem('careercraft-oauth-pending', '1');
+        onStart?.();
+        window.setTimeout(() => window.location.assign(href), 450);
+      }}
       className={cn(
-        'inline-flex h-11 w-full items-center justify-center gap-3 rounded-[var(--radius-2)] border text-sm font-medium transition-[background-color,border-color,color,transform] active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring-color)]',
+        'inline-flex h-11 w-full items-center justify-center gap-3 rounded-xl border border-white/10 bg-white/5 text-sm font-medium text-[var(--color-text)] transition-[background-color,border-color,color,transform] hover:border-white/20 hover:bg-white/10 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ring-color)]',
         tone === 'linkedin'
-          ? 'border-[var(--color-border-strong)] bg-[var(--color-bg-inset)] text-[var(--color-text)] hover:bg-[var(--color-bg-elevated)]'
-          : 'border-[var(--color-border-strong)] bg-[var(--color-bg-inset)] text-[var(--color-text)] hover:bg-[var(--color-bg-elevated)]'
+          ? ''
+          : ''
       )}
     >
       {icon}

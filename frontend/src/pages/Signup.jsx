@@ -8,6 +8,7 @@ import { AuthLayout } from './auth/AuthLayout';
 import { PasswordInput } from './auth/PasswordInput';
 import { SocialAuth } from './auth/SocialAuth';
 import { Divider, Banner, PasswordStrength } from './auth/shared';
+import { AuthTransition } from './auth/AuthTransition';
 import {
   validateName,
   validateEmail,
@@ -35,6 +36,7 @@ export default function Signup() {
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
   const [successNotice, setSuccessNotice] = useState('');
+  const [successPhase, setSuccessPhase] = useState(false);
 
   const validators = {
     name: validateName,
@@ -85,13 +87,14 @@ export default function Signup() {
         password: values.password,
       });
       setUser(data?.user || data);
+      setSuccessPhase(true);
       setSuccessNotice('Account created. Welcome to CareerCraft!');
       toast({
         title: 'Account created',
         message: 'Welcome aboard. Setting up your workspace…',
         variant: 'success',
       });
-      setTimeout(() => navigate('/dashboard', { replace: true }), 700);
+      setTimeout(() => navigate('/dashboard', { replace: true }), 900);
     } catch (err) {
       setApiError(err?.message || 'Unable to create your account. Please try again.');
     } finally {
@@ -100,6 +103,8 @@ export default function Signup() {
   };
 
   return (
+    <>
+    <AuthTransition phase={successPhase ? 'success' : null} name={values.name.trim().split(' ')[0]} />
     <AuthLayout
       eyebrow="Get started"
       title="Create your free account"
@@ -220,5 +225,6 @@ export default function Signup() {
         </Link>
       </p>
     </AuthLayout>
+    </>
   );
 }

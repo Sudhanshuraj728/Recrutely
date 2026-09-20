@@ -2,10 +2,10 @@ import { forwardRef } from 'react';
 import { cn } from '../../lib/cn';
 
 const base =
-  'rounded-[var(--radius-3)] border border-[var(--color-border)] bg-[var(--color-bg-elevated)] text-[var(--color-text)] transition-[border-color,box-shadow,transform,background-color]';
+  'rounded-2xl border border-white/5 bg-white/[0.02] text-[var(--color-text)] shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_18px_50px_rgba(0,0,0,0.16)] backdrop-blur-2xl transition-[border-color,box-shadow,transform,background-color]';
 
 const interactive =
-  'cursor-pointer hover:border-[var(--color-border-strong)] hover:shadow-[var(--shadow-elevated)] hover:bg-[var(--color-bg-inset)]';
+  'cursor-pointer hover:-translate-y-0.5 hover:border-white/10 hover:shadow-[inset_0_1px_0_rgba(255,255,255,0.08),0_22px_60px_rgba(0,0,0,0.24)] hover:bg-white/[0.03]';
 
 const paddings = {
   none: '',

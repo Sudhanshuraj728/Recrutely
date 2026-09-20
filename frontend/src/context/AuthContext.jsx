@@ -1,5 +1,5 @@
 /* eslint-disable react-refresh/only-export-components */
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { authService } from '../services';
 
 const AuthContext = createContext(null);
@@ -31,6 +31,12 @@ export function AuthProvider({ children }) {
     setStatus('ready');
     setError(null);
   }, []);
+
+  // Hydrate the session once on mount so direct visits and page refreshes
+  // on protected routes still show the signed-in identity right away.
+  useEffect(() => {
+    if (status === 'idle') refreshUser();
+  }, [status, refreshUser]);
 
   const value = useMemo(
     () => ({

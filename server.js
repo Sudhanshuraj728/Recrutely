@@ -39,6 +39,17 @@ const PORT = process.env.PORT || 3000;
 const MONGO_URI = process.env.MONGO_URI || 'mongodb://localhost:27017/careercraft';
 
 function getLinkedInCallbackUrl(req) {
+  // Explicitly configured callback wins — LinkedIn requires the redirect_uri to
+  // match EXACTLY what is registered in the developer console, so let the env
+  // variable (LINKEDIN_CALLBACK_URL) take priority over any derived value.
+  const configuredCallback = (
+    process.env.LINKEDIN_CALLBACK_URL ||
+    ''
+  ).trim().replace(/\/$/, '');
+  if (configuredCallback) {
+    return configuredCallback;
+  }
+
   const host = req.get('host');
   const protocol = (req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim();
   const isLocalRequest = host && /^(localhost|127\.0\.0\.1)(:\d+)?$/i.test(host);
@@ -46,14 +57,13 @@ function getLinkedInCallbackUrl(req) {
     return `${protocol}://${host}/auth/linkedin/callback`;
   }
 
-  const configuredClientUrl = (
+  const configuredBackendUrl = (
     process.env.RENDER_EXTERNAL_URL ||
-    process.env.CLIENT_URL ||
     ''
   ).trim().replace(/\/$/, '');
 
-  if (configuredClientUrl) {
-    return `${configuredClientUrl}/auth/linkedin/callback`;
+  if (configuredBackendUrl) {
+    return `${configuredBackendUrl}/auth/linkedin/callback`;
   }
 
   return `${protocol}://${host}/auth/linkedin/callback`;
@@ -647,18 +657,23 @@ app.get('/auth/linkedin', (req, res) => {
   }
   
   // Allow LinkedIn OAuth even if not logged in (will create/link account)
-  const redirectUri = encodeURIComponent(getLinkedInCallbackUrl(req));
+  const redirectUri = getLinkedInCallbackUrl(req);
   // Use OpenID Connect scopes - openid, profile, email (new LinkedIn API)
   // These are the valid scopes as of 2024+
   const scope = encodeURIComponent('openid profile email');
   
-  // Store if user was already logged in
+  // Store if user was already logged in and where to return after linking
+  const requestedReturn = (req.query.redirect || '').trim();
+  const returnTo = /^\/[^/]/.test(requestedReturn) ? requestedReturn : '/';
   req.session.linkedinFlow = {
     isExistingUser: req.isAuthenticated(),
-    userId: req.user?._id
+    userId: req.user?._id,
+    returnTo
   };
   
-  const linkedinAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${req.sessionID}`;
+  const linkedinAuthUrl = `https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=${clientId}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=${scope}&state=${req.sessionID}`;
+  
+  console.log('[LinkedIn] starting auth:', { redirectUri, callbackHost: req.get('host'), isAuthenticated: req.isAuthenticated(), sessionId: req.sessionID });
   
   res.redirect(linkedinAuthUrl);
 });
@@ -668,11 +683,12 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     const { code, state, error } = req.query;
     
     if (error) {
-      console.error('LinkedIn OAuth error:', error);
+      console.error('[LinkedIn] OAuth error from LinkedIn:', req.query);
       return res.redirect('/login?error=linkedin_denied');
     }
     
     if (!code) {
+      console.error('[LinkedIn] No code in callback:', { query: req.query, hasFlow: Boolean(req.session.linkedinFlow), isAuthenticated: req.isAuthenticated() });
       return res.redirect('/login?error=linkedin_failed');
     }
     
@@ -692,7 +708,7 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     const tokenData = await tokenResponse.json();
     
     if (!tokenData.access_token) {
-      console.error('Failed to get LinkedIn access token:', tokenData);
+      console.error('[LinkedIn] Failed to get access token:', { status: tokenResponse.status, body: tokenData, redirectUri: getLinkedInCallbackUrl(req) });
       return res.redirect('/login?error=linkedin_failed');
     }
     
@@ -703,7 +719,7 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     
     const userinfo = await userinfoResponse.json();
     
-    console.log('LinkedIn userinfo:', userinfo);
+    console.log('[LinkedIn] userinfo:', { status: userinfoResponse.status, userinfo });
     
     // Extract user data from OIDC response
     const email = userinfo.email;
@@ -724,6 +740,20 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     
     // Check if user was already logged in
     if (linkedinFlow.isExistingUser && linkedinFlow.userId) {
+      // If another account already holds this LinkedIn ID (e.g. a previously
+      // created account), release it so the unique index doesn't collide.
+      await User.updateMany(
+        { _id: { $ne: linkedinFlow.userId }, linkedinId: linkedinId },
+        {
+          $unset: {
+            linkedinId: '',
+            linkedinAccessToken: '',
+            linkedinTokenExpiry: '',
+            linkedinProfile: ''
+          }
+        }
+      );
+
       // Link LinkedIn to existing account
       await User.findByIdAndUpdate(linkedinFlow.userId, {
         linkedinId: linkedinId,
@@ -740,8 +770,10 @@ app.get('/auth/linkedin/callback', async (req, res) => {
       });
       
       logger.info(`LinkedIn linked to existing user: ${linkedinFlow.userId}`);
+      const returnTo = linkedinFlow.returnTo || '/';
+      const joiner = returnTo.includes('?') ? '&' : '?';
       delete req.session.linkedinFlow;
-      return res.redirect('/login?linkedin=success');
+      return res.redirect(`${returnTo}${joiner}linkedin=success`);
     }
     
     // Check if user exists with this email or LinkedIn ID
@@ -800,7 +832,7 @@ app.get('/auth/linkedin/callback', async (req, res) => {
     });
     
   } catch (error) {
-    console.error('LinkedIn callback error:', error);
+    console.error('[LinkedIn] callback exception:', error);
     res.redirect('/login?error=linkedin_error');
   }
 });
@@ -813,7 +845,7 @@ app.post('/api/auth/unlink-linkedin', async (req, res) => {
     }
     
     await User.findByIdAndUpdate(req.user._id, {
-      $unset: { linkedinId: '', linkedinProfile: '' }
+      $unset: { linkedinId: '', linkedinProfile: '', linkedinAccessToken: '', linkedinTokenExpiry: '' }
     });
     
     res.json({ success: true, message: 'LinkedIn unlinked successfully' });
@@ -1843,7 +1875,7 @@ app.post('/api/resumes/analyze', requireAuth, async (req, res) => {
         success: true,
         message: 'Resume parsed with a critical text-layer failure',
         data: {
-          company: { name: company.name, industry: company.industry },
+          company: { name: company.name, slug: companySlug, industry: company.industry },
           analysis: {
             overallScore: 0,
             summaryRecommendation: 'This document has no reliable text layer. Upload a selectable-text PDF or DOCX before requesting ATS analysis.',
@@ -1894,6 +1926,7 @@ app.post('/api/resumes/analyze', requireAuth, async (req, res) => {
       data: {
         company: {
           name: company.name,
+          slug: companySlug,
           industry: company.industry
         },
         analysis,
@@ -1974,14 +2007,7 @@ app.get('*', (req, res, next) => {
 });
 
 // Global error handler
-app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-  res.status(err.status || 500).json({
-    success: false,
-    error: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
+app.use(errorHandler);
 
 // Listen on all interfaces to ensure local requests succeed
 app.listen(PORT, '0.0.0.0', () => {

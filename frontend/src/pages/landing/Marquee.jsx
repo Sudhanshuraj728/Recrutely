@@ -1,57 +1,53 @@
 import { cn } from '../../lib/cn';
+import {
+  Brain,
+  Target,
+  BadgeCheck,
+  Gauge,
+  Users,
+  LayoutTemplate,
+  Sparkles,
+  Building2,
+} from 'lucide-react';
 
 const FEATURES = [
-  'Resume Intelligence',
-  'Job Matching',
-  'Career Readiness',
-  'Skill Gap Analysis',
-  'Networking Insights',
-  'Resume Templates',
-  'AI Resume Analysis',
-  'Company Intelligence',
-];
-
-const ICONS = [
-  ['▲', 'text-[var(--color-warning)]'],
-  ['◆', 'text-[var(--color-secondary)]'],
-  ['●', 'text-[var(--color-success)]'],
-  ['■', 'text-[var(--color-info)]'],
-  ['✦', 'text-[var(--color-danger)]'],
-  ['●', 'text-[var(--color-warning)]'],
-  ['■', 'text-[var(--color-info)]'],
-  ['◆', 'text-[var(--color-success)]'],
-  ['✦', 'text-[var(--color-danger)]'],
-  ['▲', 'text-[var(--color-secondary)]'],
+  { name: 'Resume Intelligence', Icon: Brain, iconClass: 'text-[var(--color-warning)]' },
+  { name: 'Job Matching', Icon: Target, iconClass: 'text-[var(--color-secondary)]' },
+  { name: 'Career Readiness', Icon: BadgeCheck, iconClass: 'text-[var(--color-success)]' },
+  { name: 'Skill Gap Analysis', Icon: Gauge, iconClass: 'text-[var(--color-info)]' },
+  { name: 'Networking Insights', Icon: Users, iconClass: 'text-[var(--color-danger)]' },
+  { name: 'Resume Templates', Icon: LayoutTemplate, iconClass: 'text-[var(--color-warning)]' },
+  { name: 'AI Resume Analysis', Icon: Sparkles, iconClass: 'text-[var(--color-info)]' },
+  { name: 'Company Intelligence', Icon: Building2, iconClass: 'text-[var(--color-success)]' },
 ];
 
 /**
- * Marquee — an infinite scrolling row of CareerCraft capabilities,
- * mirroring the Saffron information belt. Pure CSS animation, pauses on hover.
+ * Marquee — an infinite scrolling row of CareerCraft capabilities.
+ * Pure CSS translate3d animation (GPU-composited, zero JS per frame),
+ * so it stays perfectly smooth. Pauses on hover.
  */
 export function Marquee({ className }) {
-  const row = FEATURES.map((name, i) => ({ name, icon: ICONS[i % ICONS.length] }));
-  const doubled = [...row, ...row];
+  const doubled = [...FEATURES, ...FEATURES];
 
   return (
     <section
       aria-label="CareerCraft features"
       className={cn(
-        'overflow-hidden border-y border-[var(--color-border)] bg-[var(--color-bg-secondary)]/40 py-10',
+        'w-full overflow-hidden border-y border-white/10 bg-[#050505] py-8',
         className
       )}
     >
-      <div className="flex w-max marquee-track">
-        {doubled.map((c, i) => (
-          <div
-            key={`${c.name}-${i}`}
+      <div className="flex w-max marquee-track marquee-animate" role="list">
+        {doubled.map(({ name, Icon, iconClass }, i) => (
+<div
+            role="listitem"
+            key={`${name}-${i}`}
             className="flex shrink-0 items-center gap-3 px-10"
           >
-            <span aria-hidden="true" className={cn('text-xs', c.icon[1])}>
-              {c.icon[0]}
-            </span>
-            <span className="whitespace-nowrap font-mono text-sm font-semibold uppercase tracking-[0.18em] text-[var(--color-text)]">
-              {c.name}
-            </span>
+            <Icon aria-hidden="true" className={cn('h-4 w-4', iconClass)} strokeWidth={2.2} />
+            <span className="whitespace-nowrap font-display text-sm font-semibold uppercase tracking-[0.14em] text-[var(--color-text)]">
+        {name}
+      </span>
           </div>
         ))}
       </div>

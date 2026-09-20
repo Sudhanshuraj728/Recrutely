@@ -34,6 +34,7 @@ const subscriptionSchema = new mongoose.Schema({
     amount: Number,
     currency: { type: String, default: 'INR' },
     transactionId: String,
+    orderId: String,
     date: { type: Date, default: Date.now },
     status: { type: String, enum: ['success', 'failed', 'pending'] }
   }],

@@ -70,12 +70,12 @@ export function Features() {
 
 function Item({ icon: Icon, title, body, i }) {
   return (
-    <li className="group flex h-full flex-col border-b border-[var(--color-border)] py-8">
+    <li className="group flex h-full flex-col border-b border-[var(--color-border)] bg-[linear-gradient(145deg,rgba(255,255,255,0.045),transparent)] px-5 py-8 transition-[background-color,transform] duration-500 hover:-translate-y-1 hover:bg-[var(--color-primary-sink)] sm:px-6">
       <div className="flex items-center justify-between">
         <span className="font-mono text-sm text-[var(--color-primary)]">
           {String(i + 1).padStart(2, '0')}—
         </span>
-        <span className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--color-border-strong)] text-[var(--color-primary)] transition-colors group-hover:border-[var(--color-primary)]">
+        <span className="inline-flex h-10 w-10 items-center justify-center rounded-[var(--radius-2)] border border-[var(--color-border-strong)] text-[var(--color-primary)] transition-[border-color,background-color,transform] duration-300 group-hover:-rotate-6 group-hover:border-[var(--color-primary)] group-hover:bg-[var(--color-primary-soft)]">
           <Icon className="h-4 w-4" />
         </span>
       </div>

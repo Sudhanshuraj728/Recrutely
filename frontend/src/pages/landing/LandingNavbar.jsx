@@ -12,7 +12,7 @@ const LINKS = [
   { label: 'Pricing', href: '#pricing' },
 ];
 
-const BROWN = '#4b1b0e';
+const BROWN = 'rgba(255,255,255,0.12)';
 
 /**
  * LandingNavbar — Saffron-inspired fixed marketing navbar.
@@ -66,7 +66,7 @@ export function LandingNavbar() {
                   alignItems: 'center',
                   gap: '0.4rem',
                   background: '#fff',
-                  color: '#0a0a0a',
+                  color: '#11100c',
                   borderRadius: '9999px',
                   padding: '0.55rem 1.35rem',
                   fontFamily: 'var(--font-sans)',
@@ -78,12 +78,12 @@ export function LandingNavbar() {
                   transition: 'background 0.18s, transform 0.18s, box-shadow 0.18s',
                 }}
                 onMouseEnter={e => {
-                  e.currentTarget.style.background = '#f9a826';
+                  e.currentTarget.style.background = '#ffc45c';
                   e.currentTarget.style.transform = 'translateY(-1px)';
                   e.currentTarget.style.boxShadow = '0 8px 24px rgba(249,168,38,0.28)';
                 }}
                 onMouseLeave={e => {
-                  e.currentTarget.style.background = '#fff';
+                  e.currentTarget.style.background = '#ffffff';
                   e.currentTarget.style.transform = 'translateY(0)';
                   e.currentTarget.style.boxShadow = '0 5px 18px rgba(0,0,0,0.22)';
                 }}

@@ -8,6 +8,7 @@ import { AuthLayout } from './auth/AuthLayout';
 import { PasswordInput } from './auth/PasswordInput';
 import { SocialAuth } from './auth/SocialAuth';
 import { Divider, Banner } from './auth/shared';
+import { AuthTransition } from './auth/AuthTransition';
 import { validateEmail, validatePassword } from './auth/validation';
 
 const initialState = { email: '', password: '' };
@@ -20,7 +21,7 @@ const initialState = { email: '', password: '' };
 export default function Login() {
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const { setUser, refreshUser } = useAuthContext();
+  const { user, setUser, refreshUser } = useAuthContext();
   const { toast } = useToast();
 
   const [values, setValues] = useState(initialState);
@@ -29,18 +30,35 @@ export default function Login() {
   const [submitting, setSubmitting] = useState(false);
   const [apiError, setApiError] = useState('');
   const [successNotice, setSuccessNotice] = useState('');
+  const [greetingName, setGreetingName] = useState('');
+  const [oauthPhase, setOauthPhase] = useState(() => {
+    const success = params.get('login') === 'success' || params.get('google') === 'success' || params.get('linkedin') === 'success';
+    return success ? 'success' : (sessionStorage.getItem('careercraft-oauth-pending') ? 'loading' : null);
+  });
 
   // Handle OAuth completion markers set by the backend redirects.
   useEffect(() => {
     const oauthSuccess = params.get('login') === 'success' || params.get('google') === 'success' || params.get('linkedin') === 'success';
     if (oauthSuccess) {
+      sessionStorage.removeItem('careercraft-oauth-pending');
+      setOauthPhase('success');
+      setGreetingName(user?.name?.split(' ')[0] || '');
       setSuccessNotice('Signed in successfully. Welcome back!');
       refreshUser();
-      const t = setTimeout(() => navigate('/dashboard', { replace: true }), 1200);
+      const t = setTimeout(() => navigate('/dashboard', { replace: true }), 900);
       return () => clearTimeout(t);
     }
     if (params.get('error')) {
-      setApiError('Social sign-in could not be completed. Please try again.');
+      const reason = params.get('error');
+      const messages = {
+        linkedin_not_configured: 'LinkedIn sign-in is not configured. Contact the administrator.',
+        linkedin_denied: 'You cancelled the LinkedIn sign-in or it was blocked by LinkedIn.',
+        linkedin_no_email: 'LinkedIn did not return an email address. Make sure your LinkedIn app has the "Sign In with LinkedIn using OpenID Connect" product enabled.',
+        linkedin_failed: 'Could not connect to LinkedIn. Verify that LINKEDIN_CALLBACK_URL matches the redirect URI registered in your LinkedIn app settings.',
+        login_failed: 'Sign-in failed. Please try again.',
+        linkedin_error: 'LinkedIn connection hit an unexpected error. Check the server log for details.',
+      };
+      setApiError(messages[reason] || 'Social sign-in could not be completed. Please try again.');
     }
   }, [params, navigate, refreshUser]);
 
@@ -84,6 +102,8 @@ export default function Login() {
         password: values.password,
       });
       setUser(data?.user || data);
+      setGreetingName(data?.user?.name?.split(' ')[0] || data?.name?.split(' ')[0] || values.email.split('@')[0]);
+      setOauthPhase('success');
       setSuccessNotice('Signed in successfully. Taking you to your dashboard…');
       toast({ title: 'Welcome back', message: "You're signed in.", variant: 'success' });
       setTimeout(() => navigate('/dashboard', { replace: true }), 600);
@@ -95,6 +115,8 @@ export default function Login() {
   };
 
   return (
+    <>
+    <AuthTransition phase={oauthPhase} name={greetingName} />
     <AuthLayout
       eyebrow="Welcome back"
       title="Sign in to CareerCraft"
@@ -179,6 +201,7 @@ export default function Login() {
         </Link>
       </p>
     </AuthLayout>
+    </>
   );
 }
 

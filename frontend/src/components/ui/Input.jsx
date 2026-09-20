@@ -2,7 +2,7 @@ import { forwardRef, useId } from 'react';
 import { cn } from '../../lib/cn';
 
 const base =
-  'w-full rounded-[var(--radius-2)] border border-[var(--color-border)] bg-[var(--color-bg-inset)] px-3.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] transition-[border-color,box-shadow,background-color] hover:border-[var(--color-border-strong)] focus:border-[var(--color-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--color-primary-soft)] disabled:cursor-not-allowed disabled:opacity-50';
+  'w-full rounded-xl border border-white/10 bg-[#111111] px-3.5 text-sm text-white placeholder:text-white/35 transition-[border-color,box-shadow,background-color] hover:border-white/20 focus:border-[#F9A826] focus:bg-[#151515] focus:outline-none focus:ring-1 focus:ring-[#F9A826]/50 disabled:cursor-not-allowed disabled:opacity-50';
 
 const sizes = {
   sm: 'h-8',

@@ -1,7 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useMemo, useState } from 'react';
 
-const IntroContext = createContext({ done: false, finish: () => {} });
+const IntroContext = createContext({ done: false, cleared: false, finish: () => {}, clear: () => {} });
 
 /**
  * IntroContext — one-time brand intro state, kept at app level so it plays only
@@ -10,8 +10,10 @@ const IntroContext = createContext({ done: false, finish: () => {} });
  */
 export function IntroProvider({ children }) {
   const [done, setDone] = useState(false);
+  const [cleared, setCleared] = useState(false);
   const finish = useMemo(() => () => setDone(true), []);
-  const value = useMemo(() => ({ done, finish }), [done, finish]);
+  const clear = useMemo(() => () => setCleared(true), []);
+  const value = useMemo(() => ({ done, cleared, finish, clear }), [done, cleared, finish, clear]);
 
   return <IntroContext.Provider value={value}>{children}</IntroContext.Provider>;
 }
