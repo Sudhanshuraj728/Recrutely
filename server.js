@@ -374,9 +374,13 @@ app.get('/auth/google',
 );
 
 app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/login?error=google_failed' }),
+  (req, res, next) => {
+    const baseUrl = process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : 'http://localhost:5173';
+    passport.authenticate('google', { failureRedirect: `${baseUrl}/login?error=google_failed` })(req, res, next);
+  },
   (req, res) => {
-    res.redirect('/login?login=success');
+    const baseUrl = process.env.NODE_ENV === 'production' ? process.env.CLIENT_URL : 'http://localhost:5173';
+    res.redirect(`${baseUrl}/login?login=success`);
   }
 );
 
