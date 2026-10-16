@@ -1017,14 +1017,13 @@ function selectPaymentMethod(btn, method) {
  * Confirm demo payment and activate premium
  */
 async function confirmPaymentDemo(orderId) {
+    const payBtn = document.getElementById('payBtn');
+    const payBtnText = document.getElementById('payBtnText');
+    const originalText = payBtnText ? payBtnText.innerHTML : 'Pay';
     try {
-        const payBtn = document.getElementById('payBtn');
-        const payBtnText = document.getElementById('payBtnText');
-        const originalText = payBtnText.innerHTML;
-        
         // Show loading
-        payBtn.disabled = true;
-        payBtnText.innerHTML = '<span style="opacity: 0.6;">Processing...</span>';
+        if (payBtn) payBtn.disabled = true;
+        if (payBtnText) payBtnText.innerHTML = '<span style="opacity: 0.6;">Processing...</span>';
         
         // Simulate payment processing (1-2 seconds)
         await new Promise(resolve => setTimeout(resolve, 1500));
@@ -1062,14 +1061,14 @@ async function confirmPaymentDemo(orderId) {
                 location.reload();
             }, 2000);
         } else {
-            payBtn.disabled = false;
-            payBtnText.innerHTML = originalText;
+            if (payBtn) payBtn.disabled = false;
+            if (payBtnText) payBtnText.innerHTML = originalText;
             showNotification(confirmData.error || 'Payment failed. Please try again.', 'error');
         }
     } catch (error) {
         console.error('Payment confirmation error:', error);
-        payBtn.disabled = false;
-        payBtnText.innerHTML = originalText;
+        if (payBtn) payBtn.disabled = false;
+        if (payBtnText) payBtnText.innerHTML = originalText;
         showNotification('Payment failed. Please try again.', 'error');
     }
 }
