@@ -9,12 +9,12 @@ const THEMES = [
 
 /**
  * InfoStrip — the thin divider/information belt under the hero. A full-bleed
- * index of CareerCraft's core themes separated by 1px hairline rules
+ * index of Recrutely's core themes separated by 1px hairline rules
  * (gap-px grid trick). Mono uppercase, small, editorial.
  */
 export function InfoStrip() {
   return (
-    <section aria-label="What CareerCraft covers" className="bg-[var(--color-bg)]">
+    <section aria-label="What Recrutely covers" className="bg-[var(--color-bg)]">
       <div className="grid grid-cols-2 gap-px overflow-hidden bg-[var(--color-border)] sm:grid-cols-3 lg:grid-cols-6">
         {THEMES.map((t) => (
           <div

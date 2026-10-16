@@ -3,7 +3,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 const ThemeContext = createContext(null);
 
 function getInitialTheme() {
-  const saved = window.localStorage.getItem('careercraft-theme');
+  const saved = window.localStorage.getItem('recrutely-theme');
   if (saved === 'light' || saved === 'dark') return saved;
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
 }
@@ -14,7 +14,7 @@ export function ThemeProvider({ children }) {
   useEffect(() => {
     document.documentElement.dataset.theme = theme;
     document.documentElement.style.colorScheme = theme;
-    window.localStorage.setItem('careercraft-theme', theme);
+    window.localStorage.setItem('recrutely-theme', theme);
   }, [theme]);
 
   const value = useMemo(() => ({

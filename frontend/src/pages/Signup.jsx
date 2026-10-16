@@ -88,7 +88,7 @@ export default function Signup() {
       });
       setUser(data?.user || data);
       setSuccessPhase(true);
-      setSuccessNotice('Account created. Welcome to CareerCraft!');
+      setSuccessNotice('Account created. Welcome to Recrutely!');
       toast({
         title: 'Account created',
         message: 'Welcome aboard. Setting up your workspace…',

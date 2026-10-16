@@ -86,7 +86,7 @@ export default function Resume() {
       const response = await resumeService.analyzeResume({ filename, originalName: result?.upload?.originalName, companySlug: company.slug, jobRole, jobDescription });
       const analysis = response?.data || response;
       setResult((current) => ({ ...current, analysis }));
-      localStorage.setItem('careercraft-networking-company', JSON.stringify({ slug: company.slug, name: company.name }));
+      localStorage.setItem('recrutely-networking-company', JSON.stringify({ slug: company.slug, name: company.name }));
       toast({ title: 'Analysis ready', message: 'Your optimized resume preview and insights are ready.', variant: 'success' });
     } catch (err) { setError(err.message || 'Resume analysis failed'); }
     finally { setAnalyzing(false); }
@@ -205,8 +205,8 @@ function PanelInput({ companyName, setCompanyName, companies, jobRole, setJobRol
       <div className="mt-5 grid gap-2">
         <label className="block">
           <span className="mb-1.5 flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)]"><Building2 className="h-4 w-4 text-[var(--color-primary)]" />Target company</span>
-          <input list="careercraft-company-options" value={companyName} onChange={(event) => setCompanyName(event.target.value)} placeholder="Google, Microsoft, Amazon…" className="h-11 w-full rounded-[var(--radius-2)] border border-[var(--color-border)] bg-[var(--color-bg-inset)] px-3.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:border-[var(--color-primary)] focus:outline-none" />
-          <datalist id="careercraft-company-options">{companies.map((entry) => <option key={entry.slug} value={entry.name} />)}</datalist>
+          <input list="recrutely-company-options" value={companyName} onChange={(event) => setCompanyName(event.target.value)} placeholder="Google, Microsoft, Amazon…" className="h-11 w-full rounded-[var(--radius-2)] border border-[var(--color-border)] bg-[var(--color-bg-inset)] px-3.5 text-sm text-[var(--color-text)] placeholder:text-[var(--color-text-subtle)] focus:border-[var(--color-primary)] focus:outline-none" />
+          <datalist id="recrutely-company-options">{companies.map((entry) => <option key={entry.slug} value={entry.name} />)}</datalist>
         </label>
         <label className="block">
           <span className="mb-1.5 mt-3 flex items-center gap-2 text-sm font-medium text-[var(--color-text-muted)]"><Target className="h-4 w-4 text-[var(--color-primary)]" />Target role</span>
@@ -428,7 +428,7 @@ function buildLatexSource({ company, role, analysis }) {
   const keywords = ats?.matchedKeywords?.length ? ats.matchedKeywords : ['Core Skill 1', 'Core Skill 2', 'Core Skill 3'];
   const summary = narrative.summaryRecommendation || 'Results-driven professional applying targeted experience toward measurable business impact.';
   const keywordLine = keywords.slice(0, 8).map((keyword) => latexEscape(keyword)).join(', ');
-  return `% CareerCraft optimized resume — ${latexEscape(company)} · ${latexEscape(role || '')}
+  return `% Recrutely optimized resume — ${latexEscape(company)} · ${latexEscape(role || '')}
 \\documentclass[11pt,a4paper]{article}
 \\usepackage[utf8]{inputenc}
 \\usepackage[left=1.3cm,top=1.3cm,right=1.3cm,bottom=1.3cm]{geometry}

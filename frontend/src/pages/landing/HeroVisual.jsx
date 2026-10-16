@@ -52,7 +52,7 @@ const RAYS = [
 const BARCODE = [0, 9, 18, 27, 36];
 
 /**
- * CareerVisual — the hero artwork for CareerCraft. A single large organic
+ * CareerVisual — the hero artwork for Recrutely. A single large organic
  * composition that blends into the black canvas: layered resume/document
  * forms, ribbon gestures, one flowing career line and thin converging paths
  * meeting an opportunity node, with restrained gold and a whisper of violet.

@@ -11,7 +11,7 @@ const STEPS = [
   {
     icon: Sparkles,
     title: 'Get your analysis',
-    body: 'CareerCraft scores it, finds gaps, and rewrites weak bullets in seconds.',
+    body: 'Recrutely scores it, finds gaps, and rewrites weak bullets in seconds.',
   },
   {
     icon: Briefcase,

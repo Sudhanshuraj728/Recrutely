@@ -149,7 +149,7 @@ const RESOURCES = [
   {
     icon: BookOpen,
     title: 'Read the Resume Guide',
-    body: 'Dive into CareerCraft through our guides, tips, and interview prep.',
+    body: 'Dive into Recrutely through our guides, tips, and interview prep.',
     cta: 'Read the guide',
     to: '/resume',
   },
@@ -166,10 +166,10 @@ export function BecomeExpert() {
         <Reveal>
           <p className="eyebrow justify-center">Keep learning</p>
           <h2 className="mt-6 max-w-3xl text-h2 text-[var(--color-text)]">
-            Become an expert with CareerCraft
+            Become an expert with Recrutely
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg leading-[var(--leading-body)] text-[var(--color-text-muted)]">
-            Dive into CareerCraft through our templates, pricing, guides, and
+            Dive into Recrutely through our templates, pricing, guides, and
             interview prep — all in one place.
           </p>
           <div className="mt-10">

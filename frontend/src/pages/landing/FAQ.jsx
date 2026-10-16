@@ -9,8 +9,8 @@ import { Reveal } from './Reveal';
 
 const ITEMS = [
   {
-    q: 'How does CareerCraft analyze my resume?',
-    a: 'Upload your resume as a PDF or paste it in. CareerCraft runs an ATS-aware audit: a 0–100 clarity score, keyword coverage against the roles you want, and inline edits you can approve in one click.',
+    q: 'How does Recrutely analyze my resume?',
+    a: 'Upload your resume as a PDF or paste it in. Recrutely runs an ATS-aware audit: a 0–100 clarity score, keyword coverage against the roles you want, and inline edits you can approve in one click.',
   },
   {
     q: 'Is my resume and data kept private?',

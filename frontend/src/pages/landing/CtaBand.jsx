@@ -5,7 +5,7 @@ import { Reveal } from './Reveal';
 /**
  * CtaBand — the full-bleed closing call to action before the footer.
  * Editorial: a giant statement on the left, a hairline-ruled action column
- * on the right. CareerCraft content, Saffron composition.
+ * on the right. Recrutely content, Saffron composition.
  */
 export function CtaBand() {
   return (

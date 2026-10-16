@@ -40,7 +40,7 @@ import { PageTransition } from '../components/motion/PageTransition';
 import { Stagger, StaggerItem } from '../components/motion';
 
 /**
- * DevKit — development canvas for the CareerCraft design system.
+ * DevKit — development canvas for the Recrutely design system.
  *
  * NOT a production page. This is the visual verification surface for the
  * reusable UI primitives and motion system. Production pages are built
@@ -56,7 +56,7 @@ export default function DevKit() {
       <div className="container py-10 md:py-16">
         <PageHeader
           eyebrow="Design System"
-          title="CareerCraft UI Primitives"
+          title="Recrutely UI Primitives"
           description="The reusable foundation for the premium interface. Every component is responsive, accessible, and motion-aware."
           actions={
             <div className="flex gap-2">

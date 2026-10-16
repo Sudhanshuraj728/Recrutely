@@ -14,7 +14,7 @@ import {
 import { companyService, linkedinService } from '../services';
 import { Badge, Button, Card, PageHeader, Select, Skeleton, useToast } from '../components/ui';
 
-const STORAGE_KEY = 'careercraft-networking-company';
+const STORAGE_KEY = 'recrutely-networking-company';
 
 function linkedinPeopleSearch(query) {
   return `https://www.linkedin.com/search/results/people/?origin=GLOBAL_SEARCH_HEADER&keywords=${encodeURIComponent(query)}`;

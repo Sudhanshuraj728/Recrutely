@@ -74,7 +74,7 @@ export function Footer() {
         </div>
 
         <div className="mt-14 flex flex-col items-center justify-between gap-4 border-t border-[var(--color-border)] pt-8 font-mono text-xs uppercase tracking-wider text-[var(--color-text-subtle)] sm:flex-row">
-          <p>© {new Date().getFullYear()} CareerCraft</p>
+          <p>© {new Date().getFullYear()} Recrutely</p>
           <p>AI-powered career tools</p>
           <p>
             Made with <span className="text-[var(--color-primary)]">intent</span>

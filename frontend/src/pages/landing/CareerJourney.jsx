@@ -160,7 +160,7 @@ function SageFooter({ children }) {
   return (
     <div className="flex items-center justify-between">
       <span className="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-gray-500">
-        CareerCraft
+        Recrutely
       </span>
       {children}
     </div>

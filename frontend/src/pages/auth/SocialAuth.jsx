@@ -58,7 +58,7 @@ function OAuthButton({ href, icon, children, tone = 'default', onStart }) {
       href={href}
       onClick={(event) => {
         event.preventDefault();
-        sessionStorage.setItem('careercraft-oauth-pending', '1');
+        sessionStorage.setItem('recrutely-oauth-pending', '1');
         onStart?.();
         window.setTimeout(() => window.location.assign(href), 450);
       }}

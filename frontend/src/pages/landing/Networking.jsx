@@ -34,7 +34,7 @@ export function Networking() {
       align="left"
       eyebrow="Networking"
       title="Turn weak ties into warm intros"
-      description="CareerCraft maps your network, surfaces the people most likely to help you reach a role, and drafts the message that gets a reply."
+      description="Recrutely maps your network, surfaces the people most likely to help you reach a role, and drafts the message that gets a reply."
       className="bg-[var(--color-bg-secondary)]/40"
     >
       <div className="grid items-center gap-14 lg:grid-cols-2">

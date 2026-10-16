@@ -1,5 +1,5 @@
 /**
- * Central motion configuration for CareerCraft.
+ * Central motion configuration for Recrutely.
  * Subtle, smooth, purposeful. Animations favour transform & opacity only.
  */
 

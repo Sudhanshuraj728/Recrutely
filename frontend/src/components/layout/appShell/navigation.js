@@ -12,7 +12,7 @@ import {
 } from 'lucide-react';
 
 /**
- * CareerCraft primary navigation model.
+ * Recrutely primary navigation model.
  * Organized into clear sections so the sidebar can render a grouped,
  * premium menu with subtle section labels. Icons are map-keyed lucide
  * components for crisp control.

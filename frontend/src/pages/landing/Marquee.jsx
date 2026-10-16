@@ -22,7 +22,7 @@ const FEATURES = [
 ];
 
 /**
- * Marquee — an infinite scrolling row of CareerCraft capabilities.
+ * Marquee — an infinite scrolling row of Recrutely capabilities.
  * Pure CSS translate3d animation (GPU-composited, zero JS per frame),
  * so it stays perfectly smooth. Pauses on hover.
  */
@@ -31,7 +31,7 @@ export function Marquee({ className }) {
 
   return (
     <section
-      aria-label="CareerCraft features"
+      aria-label="Recrutely features"
       className={cn(
         'w-full overflow-hidden border-y border-white/10 bg-[#050505] py-8',
         className

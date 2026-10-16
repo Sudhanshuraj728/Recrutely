@@ -33,14 +33,14 @@ export default function Login() {
   const [greetingName, setGreetingName] = useState('');
   const [oauthPhase, setOauthPhase] = useState(() => {
     const success = params.get('login') === 'success' || params.get('google') === 'success' || params.get('linkedin') === 'success';
-    return success ? 'success' : (sessionStorage.getItem('careercraft-oauth-pending') ? 'loading' : null);
+    return success ? 'success' : (sessionStorage.getItem('recrutely-oauth-pending') ? 'loading' : null);
   });
 
   // Handle OAuth completion markers set by the backend redirects.
   useEffect(() => {
     const oauthSuccess = params.get('login') === 'success' || params.get('google') === 'success' || params.get('linkedin') === 'success';
     if (oauthSuccess) {
-      sessionStorage.removeItem('careercraft-oauth-pending');
+      sessionStorage.removeItem('recrutely-oauth-pending');
       setOauthPhase('success');
       setGreetingName(user?.name?.split(' ')[0] || '');
       setSuccessNotice('Signed in successfully. Welcome back!');
@@ -119,7 +119,7 @@ export default function Login() {
     <AuthTransition phase={oauthPhase} name={greetingName} />
     <AuthLayout
       eyebrow="Welcome back"
-      title="Sign in to CareerCraft"
+      title="Sign in to Recrutely"
       description="Pick up right where you left off — your matches, analysis, and pipeline are waiting."
     >
       <form onSubmit={onSubmit} noValidate className="space-y-5">

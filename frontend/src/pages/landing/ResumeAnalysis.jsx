@@ -17,7 +17,7 @@ const GAPS = [
 
 /**
  * ResumeAnalysis — feature storytelling for resume scoring. Left: narrative
- * text with numbered points; right: the actual CareerCraft analysis result
+ * text with numbered points; right: the actual Recrutely analysis result
  * rendered as a warm "paper" card.
  */
 export function ResumeAnalysis() {

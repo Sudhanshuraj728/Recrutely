@@ -10,7 +10,7 @@ import { Noise } from '../../components/landing/Noise';
 const TESTIMONIALS = [
   {
     quote:
-      'CareerCraft rewrote my resume and I landed two interviews in the first week. The match scores actually mean something.',
+      'Recrutely rewrote my resume and I landed two interviews in the first week. The match scores actually mean something.',
     name: 'Priya Sharma',
     role: 'Product Manager · B2B SaaS',
   },

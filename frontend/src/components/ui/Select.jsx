@@ -12,7 +12,7 @@ const sizes = {
 };
 
 /**
- * Select — native dropdown styled with the CareerCraft design system.
+ * Select — native dropdown styled with the Recrutely design system.
  * Native <select> preserves keyboard and screen-reader semantics.
  */
 export const Select = forwardRef(function Select(

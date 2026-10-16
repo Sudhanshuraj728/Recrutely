@@ -1,7 +1,7 @@
 /**
  * API client — thin, typed-free wrapper around the existing backend API.
  *
- * The CareerCraft Express backend is the single source of truth for data
+ * The Recrutely Express backend is the single source of truth for data
  * and authentication. This module only handles transport (fetch + cookies)
  * and error normalization. It introduces NO mock data.
  *

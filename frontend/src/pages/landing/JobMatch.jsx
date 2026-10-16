@@ -11,7 +11,7 @@ const JOBS = [
 
 /**
  * JobMatch — feature storytelling around smart matching. Right: numbered
- * narrative; left: the CareerCraft job-match rail rendered as a paper card.
+ * narrative; left: the Recrutely job-match rail rendered as a paper card.
  */
 export function JobMatch() {
   return (
@@ -19,7 +19,7 @@ export function JobMatch() {
       id="jobs"
       eyebrow="Smart matching"
       title="Only apply where you actually fit"
-      description="CareerCraft ranks live roles by how well your profile matches — skills, seniority, and culture — so your time goes to the best-fit opportunities first."
+      description="Recrutely ranks live roles by how well your profile matches — skills, seniority, and culture — so your time goes to the best-fit opportunities first."
       align="left"
     >
       <div className="grid items-center gap-14 lg:grid-cols-2">
