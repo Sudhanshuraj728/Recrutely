@@ -14,7 +14,7 @@ services:
       - mongo_data:/data/db
       - mongo_config:/data/configdb
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - careercraft-network
     healthcheck:
@@ -32,7 +32,7 @@ services:
     container_name: careercraft-app
     restart: unless-stopped
     ports:
-      - "${PORT:-3000}:3000"
+      - "${PORT:-3003}:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
